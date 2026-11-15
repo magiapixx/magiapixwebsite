@@ -1,0 +1,22 @@
+---
+import { SITE } from '../data/site';
+---
+<footer class="site-footer" data-mood="paper">
+  <div class="fgrid">
+    <div class="fcell" data-reveal>
+      <a class="flink type-h3" href={SITE.emailHref}>{SITE.email}</a>
+      <a class="flink" href={SITE.emailHref}>Contact us <span class="fa" aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="flegal type-small muted">
+    <div class="flegal-links">
+      <p class="frow">{SITE.social.map((s) => <a class="flink muted" href={s.href}>{s.label}</a>)}</p>
+    </div>
+    <a class="totop" href="#main">Back to top <span class="a" aria-hidden="true">↑</span></a>
+  </div>
+  <div class="wm" aria-hidden="true"><p>{'brooklynbyte'.split('').map((c, i) => <span class:list={{ 'wm-byte': i >= 8 }}>{c}</span>)}</p></div>
+</footer>
+
+<style>
+  .wm .wm-byte { color: var(--color-accent); }
+</style>

@@ -1,0 +1,937 @@
+---
+// Beranda (desain E · "Studio", disetujui owner 2026-11-09): gabungan referensi Studio Opus (layout putih bersih,
+// daftar layanan bernomor, section gelap, pricing, perspectives) dan Mondra (wordmark raksasa, grid karya 2×2,
+// workflow 3 kartu, testimoni gambar besar, awards). Aksen biru kini berlaku untuk seluruh situs (global.css).
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, img } from '../data/site';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const selectedWorks = projects.slice(0, 4);
+const pad = (n: number) => String(n).padStart(2, '0');
+
+// Paket (menggantikan Our workflow + Pricing plans): fokus pada manfaat, harga hanya catatan kecil.
+// [CONTOH] Nama paket, manfaat, durasi, dan harga fiktif untuk mockup; ganti dengan data asli.
+const packages = [
+  { name: 'Basic', tag: 'A sharp start for a new product.', time: '2–3 days', from: 'from $87',
+    items: ['Logo and core visual identity', 'A fast one-page website', 'Social media starter kit', 'Two rounds of revisions', '14 days of launch support'] },
+  { name: 'Plus', tag: 'For teams ready to grow.', time: '1–2 weeks', from: 'from $425', badge: 'Most chosen',
+    items: ['Everything in Basic', 'A multi-page site you can edit yourself', 'UI design for your key product screens', 'Analytics and conversion setup', '30 days of launch support'] },
+  { name: 'Identity', tag: 'A complete brand, built to last.', time: '3–4 weeks', from: 'start from $1,500',
+    items: ['Brand strategy and positioning', 'Naming support and tone of voice', 'Full visual identity and guidelines', 'Website, motion and launch assets', 'A dedicated senior lead'] },
+];
+---
+<BaseLayout title="Brooklynbyte" description="Brooklynbyte is an independent design and engineering studio in Brooklyn. Strategy, brand, websites and products for startups and growing companies.">
+  <!-- 1. Hero: meta + angka, foto lebar, wordmark raksasa -->
+  <section class="e-hero" data-mood="paper" aria-labelledby="e-h1">
+    <div class="wrap e-hero-top">
+      <div class="e-hero-meta" data-intro>
+        <p class="type-small muted">Brooklyn, NY<br />Est. 2016</p>
+        <div class="e-faces" aria-hidden="true">{[0, 1, 2].map((k) => <Image src={img(`t-${k + 1}`)} alt="" width={88} height={88} />)}</div>
+        <p class="type-small">24 people who<br />ship every week</p>
+      </div>
+      <div class="e-hero-lead" data-intro>
+        <h1 id="e-h1" class="e-lead">Strategy, brand, websites and products for companies ready for change.</h1>
+        <dl class="e-mini">
+          <div><dd>10</dd><dt>Years of practice</dt></div>
+          <div><dd>140+</dd><dt>Products shipped</dt></div>
+          <div><dd>32</dd><dt>Awards</dt></div>
+        </dl>
+      </div>
+    </div>
+    <div class="e-hero-img">
+      <video
+        src="/assets/aistudio/StockCake-Dewy_Blue_Flower-0f877554-1627-4960-810f-e3df7fc085b4-original_fb1358e8.mp4"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="auto"
+        aria-label="Dewy blue petals in slow macro motion"
+      ></video>
+      <div class="e-hero-scrim" aria-hidden="true"></div>
+    </div>
+    <p class="e-word" aria-hidden="true"><span class="e-word-in"><span>brooklyn</span><b>byte</b></span></p>
+  </section>
+
+  <!-- 2. Intro: kalimat besar dengan empat foto kapsul dari Selected Works di antara kata (melebar saat terlihat); kata abu-abu menjadi hitam mengikuti scroll -->
+  <section class="sec e-intro io2" data-mood="paper" aria-label="About us">
+    <div class="wrap">
+      <p class="io2-t" data-scrub>We are a design {selectedWorks[0] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[0].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[0].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and engineering studio driven by a love for clear ideas, honest interfaces {selectedWorks[1] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[1].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[1].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and code that lasts. We partner with founders {selectedWorks[2] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[2].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[2].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and teams to build brands {selectedWorks[3] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[3].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[3].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and products people come back to.</p>
+    </div>
+  </section>
+
+  <!-- 3. Selected works: foto proyek selebar layar, nama klien raksasa di atas foto -->
+  <section class="sec e-wk" data-mood="paper" aria-labelledby="e-works">
+    <div class="wrap e-head e-wk-head">
+      <h2 class="e-h2 e-wk-title" id="e-works">Selected <span class="e-wk-tail">works <sup>({projects.length})</sup></span></h2>
+      <a class="ulink type-small e-wk-all" href="/projects/">View all →</a>
+    </div>
+    <div class="e-wk-list">
+      {selectedWorks.map((p, i) => (
+        <a class="e-wk-item" href={`/projects/${p.id}/`} data-cursor="View">
+          <div class="e-wk-img"><Image src={p.data.cover} alt={p.data.coverAlt} widths={[1280, 1920, 2400]} sizes="100vw" quality={95} style={p.id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></div>
+          <div class="wrap e-wk-cap">
+            <span class="e-wk-n type-small">{pad(i + 1)} / {pad(projects.length)}</span>
+            <h3 class="e-wk-t">{p.data.client}</h3>
+            <ul class="e-wk-tags"><li class="is-res">{p.data.result}</li><li>{p.data.categoryLabel}</li><li>{p.data.year}</li></ul>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Layer transisi morphing: memindahkan 4 gambar About Us turun membentuk 4 kartu Selected Works -->
+  <div class="io-morph-layer" aria-hidden="true">
+    {selectedWorks.map((p) => (
+      <div class="io-morph-card">
+        <Image
+          src={p.data.cover}
+          alt=""
+          widths={[1280, 1920, 2400]}
+          sizes="100vw"
+          quality={95}
+          style={p.id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined}
+          loading="eager"
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- 5. Choose your package: kartu paket mendatar bertingkat (Basic → Identity), nama paket tegak di kiri, manfaat di depan, harga kecil; Plus berlatar biru -->
+  <section class="sec e-pk" data-mood="paper" aria-labelledby="e-pkg">
+    <div class="wrap">
+      <div class="e-head">
+        <h2 class="e-h2" id="e-pkg" data-split>Choose your package</h2>
+        <p class="type-small muted e-pkg-side">Every package comes with one senior team.<br />Pick the level that fits where you are.</p>
+      </div>
+      <ol class="e-pkgs">
+        {packages.map((p, i) => (
+          <li class:list={['e-pkg', { 'is-acc': i === 1 }]}>
+            <header>
+              <span class="e-pkg-n">{i + 1}.</span>
+              {p.badge && <span class="e-badge">{p.badge}</span>}
+            </header>
+            <div class="e-pkg-top">
+              <h3 class="e-pkg-name">{p.name}</h3>
+              <p class="e-pkg-tag">{p.tag}</p>
+            </div>
+            <ul class="e-pkg-list">{p.items.map((it) => <li>{it}</li>)}</ul>
+            <footer>
+              <p class="e-pkg-meta">{p.time} · {p.from}</p>
+              <a class="e-pkg-go" href={SITE.emailHref} aria-label={`Email about ${p.name}`}><span>Start with {p.name}</span><i aria-hidden="true">↗</i></a>
+            </footer>
+          </li>
+        ))}
+      </ol>
+      <p class="type-caption muted e-fine">Packages and prices are examples for this mockup.</p>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(SplitText, ScrollTrigger);
+  const root = document.documentElement;
+  // Hero: saat di-scroll, image melebar penuh 100svh, elemen atas mengecil 60% di sisi atas image,
+  // burger menu turun ke sisi kanan heading, dan logo kiri atas turun ke bawah menggantikan wordmark brooklynbyte.
+  const run = () => {
+    const hero = document.querySelector<HTMLElement>('.e-hero');
+    const heroVideo = hero?.querySelector<HTMLVideoElement>('.e-hero-img video') ?? null;
+    if (root.classList.contains('no-motion')) {
+      heroVideo?.pause();
+      return;
+    }
+    const heroTop = document.querySelector<HTMLElement>('.e-hero-top');
+    const heroMeta = document.querySelector<HTMLElement>('.e-hero-meta');
+    const heroLead = document.querySelector<HTMLElement>('.e-hero-lead');
+    const heroImg = document.querySelector<HTMLElement>('.e-hero-img');
+    const heroImgEl = heroImg?.querySelector<HTMLElement>('img, video') ?? null;
+    const heroScrim = heroImg?.querySelector<HTMLElement>('.e-hero-scrim') ?? null;
+    const word = document.querySelector<HTMLElement>('.e-word');
+    const wordIn = word?.querySelector<HTMLElement>('.e-word-in') ?? null;
+    const header = document.querySelector<HTMLElement>('.site-header');
+    const headerLogo = header?.querySelector<HTMLElement>('.logo') ?? null;
+    const menuBtn = header?.querySelector<HTMLElement>('.menu-btn') ?? null;
+    const menuIcon = menuBtn?.querySelector<HTMLElement>('i') ?? null;
+    if (!hero || !heroTop || !heroImg || !word || !wordIn) return;
+
+    const getGutter = () => parseFloat(getComputedStyle(heroTop).paddingLeft) || 16;
+    const getInitImgTop = () => heroTop.offsetHeight;
+    const getInitImgHeight = () => Math.min(720, Math.max(320, innerHeight * 0.58));
+    const getInitRadius = () => Math.min(32, Math.max(20, innerWidth * 0.022));
+    const getTargetTop = () => (innerWidth >= 768 ? 28 : 20);
+    const isDesktop = () => innerWidth >= 1024;
+    const isMetaHidden = () => !heroMeta || getComputedStyle(heroMeta).display === 'none';
+    const isLeadFirst = () => !!heroLead && !isMetaHidden() && heroLead.offsetTop < heroMeta!.offsetTop;
+
+    const getMetaTargetTop = () => {
+      if (isDesktop() || !heroLead || !isLeadFirst()) return getTargetTop();
+      return getTargetTop() + heroLead.offsetHeight * 0.6 + 12;
+    };
+
+    const getLeadTargetTop = () => {
+      if (isDesktop() || isMetaHidden() || isLeadFirst()) return getTargetTop();
+      return getTargetTop() + heroMeta!.offsetHeight * 0.6 + 12;
+    };
+
+    const getMenuTargetTop = () => {
+      const leadTop = getLeadTargetTop();
+      const iconOffset = menuIcon ? menuIcon.offsetTop : 18;
+      return leadTop + 4 - iconOffset;
+    };
+
+    const getLogoWidth = () => {
+      if (!headerLogo) return 120;
+      const sup = headerLogo.querySelector<HTMLElement>('sup');
+      return headerLogo.offsetWidth - (sup ? sup.offsetWidth : 0);
+    };
+    const getWordStartScale = () => (wordIn.offsetWidth ? getLogoWidth() / wordIn.offsetWidth : 0.1);
+    const getWordStartX = () => {
+      if (!headerLogo) return 0;
+      return headerLogo.offsetLeft - (word.offsetLeft + wordIn.offsetLeft);
+    };
+    const getWordStartY = () => {
+      if (!headerLogo) return 0;
+      const scaledH = wordIn.offsetHeight * getWordStartScale();
+      const targetTop = headerLogo.offsetTop + (headerLogo.offsetHeight - scaledH) / 2;
+      return targetTop - (word.offsetTop + wordIn.offsetTop);
+    };
+
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 1px)', () => {
+      gsap.set(heroTop, { position: 'relative', zIndex: 3 });
+      gsap.set(heroImg, { position: 'absolute', zIndex: 1, marginInline: 0 });
+      gsap.set(word, {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 'clamp(12px, 2.5vh, 32px)',
+        margin: 0,
+        zIndex: 3,
+      });
+
+      if (heroMeta) gsap.set(heroMeta, { transformOrigin: 'top left' });
+      if (heroLead) gsap.set(heroLead, { transformOrigin: isDesktop() ? 'top right' : 'top left' });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          id: 'e-hero',
+          trigger: hero,
+          start: 'top top',
+          end: () => `+=${Math.max(1200, innerHeight * 1.55)}`,
+          pin: true,
+          scrub: 0.35,
+          anticipatePin: 1,
+          refreshPriority: 10,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            if (heroLead) gsap.set(heroLead, { transformOrigin: isDesktop() ? 'top right' : 'top left' });
+          },
+          onLeave: () => {
+            if (header) {
+              header.classList.remove('is-solid');
+              if (menuBtn) gsap.set(menuBtn, { clearProps: 'color' });
+              gsap.to(header, { yPercent: -110, duration: 0.25, ease: 'power2.out', overwrite: true });
+            }
+          },
+          onEnterBack: () => {
+            if (header) {
+              header.classList.remove('is-solid');
+              if (headerLogo) gsap.set(headerLogo, { autoAlpha: 0 });
+              if (menuBtn) gsap.set(menuBtn, { y: getMenuTargetTop() - menuBtn.offsetTop, color: '#ffffff' });
+              gsap.to(header, { yPercent: 0, duration: 0.22, ease: 'power2.out', overwrite: true });
+            }
+          },
+        },
+      });
+
+      tl.fromTo(
+        heroImg,
+        {
+          top: getInitImgTop,
+          left: getGutter,
+          right: getGutter,
+          height: getInitImgHeight,
+          borderRadius: getInitRadius,
+        },
+        {
+          top: 0,
+          left: 0,
+          right: 0,
+          height: () => hero.clientHeight,
+          borderRadius: 0,
+          duration: 1,
+          ease: 'power2.inOut',
+        },
+        0,
+      );
+
+      if (heroImgEl) {
+        tl.fromTo(
+          heroImgEl,
+          { scale: 1.08 },
+          { scale: 1, duration: 1, ease: 'power2.inOut' },
+          0,
+        );
+      }
+
+      if (heroScrim) {
+        tl.fromTo(
+          heroScrim,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.5, ease: 'none' },
+          0.2,
+        );
+      }
+
+      if (heroMeta) {
+        tl.fromTo(
+          heroMeta,
+          { scale: 1, y: 0, color: '#0e1116' },
+          {
+            scale: 0.6,
+            y: () => (isMetaHidden() ? 0 : getMetaTargetTop() - heroMeta.offsetTop),
+            color: '#ffffff',
+            duration: 1,
+            ease: 'power2.inOut',
+          },
+          0,
+        );
+        const metaMuted = heroMeta.querySelector<HTMLElement>('.muted');
+        if (metaMuted) {
+          tl.to(metaMuted, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
+        }
+      }
+
+      if (heroLead) {
+        tl.fromTo(
+          heroLead,
+          { scale: 1, x: 0, y: 0, color: '#0e1116' },
+          {
+            scale: 0.6,
+            x: () => (isDesktop() && menuBtn ? -(menuBtn.offsetWidth + 24) : 0),
+            y: () => getLeadTargetTop() - heroLead.offsetTop,
+            color: '#ffffff',
+            duration: 1,
+            ease: 'power2.inOut',
+          },
+          0,
+        );
+        const miniLabels = heroLead.querySelectorAll<HTMLElement>('.e-mini dt');
+        if (miniLabels.length) {
+          tl.to(miniLabels, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
+        }
+        const miniAccent = heroLead.querySelector<HTMLElement>('.e-mini > div:nth-child(2) dd');
+        if (miniAccent) {
+          tl.to(miniAccent, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
+        }
+      }
+
+      if (menuBtn) {
+        tl.fromTo(
+          menuBtn,
+          { y: 0, color: '#0e1116' },
+          {
+            y: () => getMenuTargetTop() - menuBtn.offsetTop,
+            color: '#ffffff',
+            duration: 1,
+            ease: 'power2.inOut',
+          },
+          0,
+        );
+      }
+
+      if (headerLogo) {
+        tl.fromTo(
+          headerLogo,
+          { autoAlpha: 1 },
+          { autoAlpha: 0, duration: 0.06, ease: 'none' },
+          0,
+        );
+      }
+
+      tl.fromTo(
+        wordIn,
+        {
+          x: getWordStartX,
+          y: getWordStartY,
+          scale: getWordStartScale,
+          color: '#0e1116',
+        },
+        {
+          x: 0,
+          y: 0,
+          scale: 1,
+          color: '#ffffff',
+          duration: 1,
+          ease: 'power2.inOut',
+        },
+        0,
+      );
+
+      const wordBold = wordIn.querySelector<HTMLElement>('b');
+      if (wordBold) {
+        tl.to(wordBold, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
+      }
+
+      if (headerLogo) {
+        tl.fromTo(
+          wordIn,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.06, ease: 'none' },
+          0,
+        );
+      }
+
+      tl.to({}, { duration: 0.25 });
+    });
+  };
+
+  // Selected works: foto bergerak pelan (parallax) dan judul naik saat kartu masuk layar.
+  const outro = () => {
+    if (root.classList.contains('no-motion')) return;
+    const ct = document.querySelector<HTMLElement>('.e-cta-t');
+    if (ct) { const sp = new SplitText(ct, { type: 'words', aria: 'none' }); gsap.from(sp.words, { yPercent: 60, opacity: 0, duration: 0.9, ease: 'power4.out', stagger: 0.04, scrollTrigger: { trigger: '.e-cta', start: 'top 70%' } }); }
+  };
+  const works = () => {
+    if (root.classList.contains('no-motion')) return;
+    document.querySelectorAll<HTMLElement>('.e-wk-item').forEach((it, idx) => {
+      gsap.fromTo(it.querySelector('img'), { yPercent: 0 }, { yPercent: -8, ease: 'none', scrollTrigger: { trigger: it, start: 'top top', end: 'bottom top', scrub: true } });
+      if (idx >= 4) {
+        gsap.from(it.querySelectorAll('.e-wk-n, .e-wk-t, .e-wk-tags li'), {
+          y: 24,
+          opacity: 0,
+          duration: 0.7,
+          ease: 'power3.out',
+          stagger: 0.05,
+          scrollTrigger: { trigger: it, start: 'top 25%' },
+        });
+      }
+    });
+  };
+  // Review kapsul: bila lebih dari satu, berganti tiap 4,5 detik (naik keluar, masuk dari bawah) selama terlihat; berhenti saat hover.
+  document.querySelectorAll<HTMLElement>('[data-rv]').forEach((box) => {
+    const its = [...box.querySelectorAll<HTMLElement>('.dv-rv-i')];
+    if (its.length < 2 || root.classList.contains('no-motion')) return;
+    let cur = 0, seen = false, hold = false;
+    box.addEventListener('pointerenter', () => { hold = true; });
+    box.addEventListener('pointerleave', () => { hold = false; });
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; }).observe(box);
+    setInterval(() => {
+      if (!seen || hold || document.hidden) return;
+      const prev = its[cur]; cur = (cur + 1) % its.length; const next = its[cur];
+      its.forEach((x) => x.classList.remove('is-out'));
+      prev.classList.remove('is-on'); prev.classList.add('is-out'); prev.setAttribute('aria-hidden', 'true');
+      next.classList.add('is-on'); next.removeAttribute('aria-hidden');
+    }, 4500);
+  });
+  // Intro: section dipin selama animasi opacity + blur kalimat & kapsul berlangsung, lalu lanjut scroll setelah selesai.
+  const intro = () => {
+    if (root.classList.contains('no-motion')) return;
+    const introSec = document.querySelector<HTMLElement>('.e-intro');
+    const sc = document.querySelector<HTMLElement>('[data-scrub]');
+    if (!introSec || !sc) return;
+
+    const sp = new SplitText(sc, { type: 'words', tag: 'span', aria: 'none' });
+    const tokens = Array.from(sc.children).filter(
+      (el): el is HTMLElement => el instanceof HTMLElement,
+    );
+    const targets = tokens.length ? tokens : sp.words;
+    const exitWrappers = targets
+      .filter((el): el is HTMLElement => el instanceof HTMLElement && !el.classList.contains('io-pic'))
+      .map((w) => {
+        const ex = document.createElement('span');
+        ex.className = 'io-ex';
+        w.parentNode?.insertBefore(ex, w);
+        ex.appendChild(w);
+        return ex;
+      });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        id: 'e-intro',
+        trigger: introSec,
+        start: 'top top',
+        end: () => `+=${Math.max(1200, innerHeight * 1.8)}`,
+        pin: true,
+        scrub: 0.35,
+        anticipatePin: 1,
+        refreshPriority: 5,
+        invalidateOnRefresh: true,
+        onLeave: (self) => self.getTween()?.progress(1),
+        onLeaveBack: (self) => self.getTween()?.progress(0),
+      },
+    });
+
+    tl.fromTo(
+      targets,
+      { opacity: 0.12, filter: 'blur(7px)' },
+      {
+        opacity: 1,
+        filter: 'blur(0px)',
+        duration: 2.2,
+        ease: 'power1.out',
+        stagger: 0.35,
+      },
+      0,
+    );
+
+    // Beri jeda singkat setelah seluruh kalimat tajam sebelum melepas pin ke section berikutnya
+    tl.to({}, { duration: 0.6 });
+
+    // Setelah About Us selesai di-scroll, ke-4 gambar kapsul berpindah turun dan membentuk 4 kartu di Selected Works
+    const pics = Array.from(sc.querySelectorAll<HTMLElement>('.io-pic'));
+    const morphLayer = document.querySelector<HTMLElement>('.io-morph-layer');
+    const clones = Array.from(document.querySelectorAll<HTMLElement>('.io-morph-card'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.e-wk-item'));
+    const cardImgBoxes = cards.map((c) => c.querySelector<HTMLElement>('.e-wk-img'));
+    const cardCaps = cards.map((c) => c.querySelector<HTMLElement>('.e-wk-cap'));
+    const wkTitle = document.querySelector<HTMLElement>('.e-wk-title');
+    const wkAll = document.querySelector<HTMLElement>('.e-wk-all');
+
+    if (pics.length && morphLayer && clones.length === pics.length && cards.length >= pics.length) {
+      interface BoxRect {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+        radius: number;
+      }
+
+      const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+      const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+      let introEndScroll = 0;
+      let picBase: BoxRect[] = [];
+      let cardMetrics: { docTop: number; left: number; width: number; height: number }[] = [];
+      let endScrolls: number[] = [];
+
+      const getDockRect = (idx: number): BoxRect => {
+        const w = innerWidth;
+        const h = innerHeight;
+        const gutter = parseFloat(getComputedStyle(introSec).paddingLeft) || (w >= 768 ? 40 : 16);
+        const isSmall = w < 640;
+        const cw = isSmall ? 60 : w < 1024 ? 76 : 92;
+        const m = cardMetrics[idx];
+        const cardAspect = m && m.height > 0 ? m.width / m.height : 1.75;
+        const ch = Math.min(Math.round(cw * 0.72), Math.max(36, Math.round(cw / cardAspect)));
+        const gap = isSmall ? 8 : 12;
+        const slot = idx - 1; // 0..2 untuk kartu 1..3
+        const total = 3;
+        const rightMargin = isSmall ? gutter : Math.max(gutter, 92);
+        const left = w - rightMargin - (total - slot) * cw - (total - 1 - slot) * gap;
+        const bottomOffset = isSmall ? Math.max(116, Math.round(h * 0.16)) : Math.min(48, Math.max(24, Math.round(w * 0.03)));
+        return {
+          left,
+          top: h - bottomOffset - ch,
+          width: cw,
+          height: ch,
+          radius: isSmall ? 10 : 14,
+        };
+      };
+
+      const measure = () => {
+        const introTrig = ScrollTrigger.getById('e-intro');
+        introEndScroll = introTrig ? introTrig.end : introSec.getBoundingClientRect().bottom + scrollY - innerHeight;
+
+        const ir = introSec.getBoundingClientRect();
+        picBase = pics.map((p) => {
+          const r = p.getBoundingClientRect();
+          return {
+            left: r.left - ir.left,
+            top: r.top - ir.top,
+            width: r.width,
+            height: r.height,
+            radius: r.height / 2,
+          };
+        });
+
+        cardMetrics = cards.slice(0, pics.length).map((c) => {
+          const r = c.getBoundingClientRect();
+          return {
+            docTop: r.top + scrollY,
+            left: r.left,
+            width: r.width,
+            height: r.height,
+          };
+        });
+
+        endScrolls = cardMetrics.map((m) => Math.max(introEndScroll + 200, Math.round(m.docTop - innerHeight * 0.04)));
+      };
+
+      const applyRect = (el: HTMLElement, box: BoxRect, opacity: number, shadowAlpha: number, scrimAlpha: number) => {
+        el.style.visibility = opacity <= 0.005 ? 'hidden' : 'visible';
+        el.style.opacity = opacity.toFixed(3);
+        el.style.transform = `translate3d(${box.left.toFixed(1)}px, ${box.top.toFixed(1)}px, 0)`;
+        el.style.width = `${box.width.toFixed(1)}px`;
+        el.style.height = `${box.height.toFixed(1)}px`;
+        el.style.borderRadius = `${box.radius.toFixed(1)}px`;
+        el.style.setProperty('--scrim', scrimAlpha.toFixed(3));
+        el.style.boxShadow = shadowAlpha > 0.01 ? `0 16px 36px oklch(0 0 0 / ${(0.24 * shadowAlpha).toFixed(3)})` : 'none';
+      };
+
+      const setCapProgress = (cap: HTMLElement | null | undefined, p: number) => {
+        if (!cap) return;
+        const t = easeOutCubic(clamp01(p));
+        cap.style.opacity = t.toFixed(3);
+        cap.style.transform = t >= 0.999 ? 'translate3d(0, 0, 0)' : `translate3d(0, ${((1 - t) * 24).toFixed(1)}px, 0)`;
+      };
+
+      const setWorksHeadProgress = (pHead: number) => {
+        const t = easeOutCubic(clamp01(pHead));
+        const dist = 68;
+        if (wkTitle) {
+          wkTitle.style.opacity = t.toFixed(3);
+          wkTitle.style.transform = t >= 0.999 ? 'translate3d(0, 0, 0)' : `translate3d(${((-1 + t) * dist).toFixed(1)}px, 0, 0)`;
+        }
+        if (wkAll) {
+          wkAll.style.opacity = t.toFixed(3);
+          wkAll.style.transform = t >= 0.999 ? 'translate3d(0, 0, 0)' : `translate3d(${((1 - t) * dist).toFixed(1)}px, 0, 0)`;
+        }
+      };
+
+      let wasPastIntro = false;
+
+      const setAboutExitProgress = (pExit: number) => {
+        const n = exitWrappers.length;
+        if (!n) return;
+        const p = clamp01(pExit);
+        if (p <= 0) {
+          for (let k = 0; k < n; k++) {
+            exitWrappers[k].style.opacity = '1';
+            exitWrappers[k].style.filter = 'none';
+          }
+          return;
+        }
+        if (p >= 1) {
+          for (let k = 0; k < n; k++) {
+            exitWrappers[k].style.opacity = '0';
+            exitWrappers[k].style.filter = 'blur(7px)';
+          }
+          return;
+        }
+        const wordWin = 0.45;
+        const spread = 1 - wordWin;
+        for (let k = 0; k < n; k++) {
+          const startAt = n > 1 ? (k / (n - 1)) * spread : 0;
+          const wp = clamp01((p - startAt) / wordWin);
+          const w = exitWrappers[k];
+          if (wp <= 0) {
+            w.style.opacity = '1';
+            w.style.filter = 'none';
+          } else if (wp >= 1) {
+            w.style.opacity = '0';
+            w.style.filter = 'blur(7px)';
+          } else {
+            const easeWp = wp * wp * (3 - 2 * wp);
+            w.style.opacity = (1 - easeWp).toFixed(3);
+            w.style.filter = `blur(${(easeWp * 7).toFixed(2)}px)`;
+          }
+        }
+      };
+
+      const updateMorph = (sy: number) => {
+        if (!picBase.length || !endScrolls.length) return;
+        const lastEnd = endScrolls[endScrolls.length - 1];
+
+        if (sy <= introEndScroll) {
+          if (wasPastIntro) {
+            wasPastIntro = false;
+            setAboutExitProgress(0);
+          }
+          setWorksHeadProgress(0);
+          morphLayer.style.visibility = 'hidden';
+          pics.forEach((p) => { p.style.visibility = 'visible'; });
+          clones.forEach((c) => { c.style.visibility = 'hidden'; });
+          cardImgBoxes.forEach((box) => { if (box) box.style.opacity = '0'; });
+          cardCaps.slice(0, pics.length).forEach((cap) => setCapProgress(cap, 0));
+          return;
+        }
+
+        wasPastIntro = true;
+
+        if (sy >= lastEnd) {
+          setAboutExitProgress(1);
+          setWorksHeadProgress(1);
+          morphLayer.style.visibility = 'hidden';
+          pics.forEach((p) => { p.style.visibility = 'hidden'; });
+          clones.forEach((c) => { c.style.visibility = 'hidden'; });
+          cardImgBoxes.forEach((box) => { if (box) box.style.opacity = '1'; });
+          cardCaps.slice(0, pics.length).forEach((cap) => setCapProgress(cap, 1));
+          return;
+        }
+
+        morphLayer.style.visibility = 'visible';
+        pics.forEach((p) => { p.style.visibility = 'hidden'; });
+
+        const p0 = clamp01((sy - introEndScroll) / Math.max(1, endScrolls[0] - introEndScroll));
+        setAboutExitProgress(p0 / 0.42);
+        setWorksHeadProgress((p0 - 0.22) / 0.52);
+
+        for (let i = 0; i < clones.length; i++) {
+          const clone = clones[i];
+          const cardBox = cardImgBoxes[i];
+          const cardCap = cardCaps[i];
+          const targetMetric = cardMetrics[i];
+          const targetBox: BoxRect = {
+            left: targetMetric.left,
+            top: targetMetric.docTop - sy,
+            width: targetMetric.width,
+            height: targetMetric.height,
+            radius: 0,
+          };
+
+          if (i === 0) {
+            if (p0 >= 1) {
+              clone.style.visibility = 'hidden';
+              if (cardBox) cardBox.style.opacity = '1';
+              setCapProgress(cardCap, 1);
+            } else {
+              const e = easeInOutCubic(p0);
+              const box: BoxRect = {
+                left: lerp(picBase[0].left, targetBox.left, e),
+                top: lerp(picBase[0].top, targetBox.top, e),
+                width: lerp(picBase[0].width, targetBox.width, e),
+                height: lerp(picBase[0].height, targetBox.height, e),
+                radius: lerp(picBase[0].radius, 0, e),
+              };
+              if (cardBox) cardBox.style.opacity = p0 >= 0.985 ? '1' : '0';
+              setCapProgress(cardCap, (p0 - 0.72) / 0.28);
+              applyRect(clone, box, 1, (1 - p0) * 0.8, e);
+            }
+            continue;
+          }
+
+          if (sy >= endScrolls[i]) {
+            clone.style.visibility = 'hidden';
+            if (cardBox) cardBox.style.opacity = '1';
+            setCapProgress(cardCap, 1);
+            continue;
+          }
+
+          const dock = getDockRect(i);
+
+          if (sy <= endScrolls[0]) {
+            if (cardBox) cardBox.style.opacity = '0';
+            setCapProgress(cardCap, 0);
+            // Fase 1: turun serentak (sedikit bertahap) dari About Us ke posisi dock kartu di Selected Works
+            const delay = i * 0.06;
+            const localP = clamp01((p0 - delay) / Math.max(0.01, 1 - delay));
+            const e = easeInOutCubic(localP);
+            const box: BoxRect = {
+              left: lerp(picBase[i].left, dock.left, e),
+              top: lerp(picBase[i].top, dock.top, e),
+              width: lerp(picBase[i].width, dock.width, e),
+              height: lerp(picBase[i].height, dock.height, e),
+              radius: lerp(picBase[i].radius, dock.radius, e),
+            };
+            applyRect(clone, box, 1, e, 0);
+          } else if (sy <= endScrolls[i - 1]) {
+            if (cardBox) cardBox.style.opacity = '0';
+            setCapProgress(cardCap, 0);
+            // Menunggu rapi sebagai mini-card di dock sampai giliran kartunya muncul
+            applyRect(clone, dock, 1, 1, 0);
+          } else {
+            // Fase 2: mengembang dari mini-card menjadi kartu Selected Works ukuran penuh
+            const pi = clamp01((sy - endScrolls[i - 1]) / Math.max(1, endScrolls[i] - endScrolls[i - 1]));
+            const e = easeInOutCubic(pi);
+            const box: BoxRect = {
+              left: lerp(dock.left, targetBox.left, e),
+              top: lerp(dock.top, targetBox.top, e),
+              width: lerp(dock.width, targetBox.width, e),
+              height: lerp(dock.height, targetBox.height, e),
+              radius: lerp(dock.radius, 0, e),
+            };
+            if (cardBox) cardBox.style.opacity = pi >= 0.985 ? '1' : '0';
+            setCapProgress(cardCap, (pi - 0.72) / 0.28);
+            applyRect(clone, box, 1, (1 - pi), e);
+          }
+        }
+      };
+
+      ScrollTrigger.create({
+        id: 'e-intro-morph',
+        start: 0,
+        end: 'max',
+        refreshPriority: -1,
+        onRefresh: (self) => {
+          measure();
+          updateMorph(self.scroll());
+        },
+        onUpdate: (self) => updateMorph(self.scroll()),
+      });
+    }
+  };
+  // Kartu paket: masuk turun dari atas ke bawah secara berurutan (Basic → Plus → Identity).
+  const pk = () => {
+    if (root.classList.contains('no-motion')) return;
+    const cards = gsap.utils.toArray<HTMLElement>('.e-pkg');
+    const list = document.querySelector('.e-pkgs');
+    if (!list || !cards.length) return;
+    if (!matchMedia('(min-width: 1024px)').matches) {
+      cards.forEach((c) =>
+        gsap.fromTo(
+          c,
+          { y: -56, opacity: 0, clipPath: 'inset(0% 0% 100% 0% round 24px)' },
+          {
+            y: 0,
+            opacity: 1,
+            clipPath: 'inset(0% 0% 0% 0% round 24px)',
+            duration: 0.9,
+            ease: 'power3.out',
+            clearProps: 'clipPath,transform',
+            scrollTrigger: { trigger: c, start: 'top 85%' },
+          },
+        ),
+      );
+      return;
+    }
+    cards.forEach((c, i) =>
+      gsap.timeline({ scrollTrigger: { trigger: list, start: 'top 78%' }, delay: i * 0.14 })
+        .fromTo(
+          c,
+          { y: -88, opacity: 0, clipPath: 'inset(0% 0% 100% 0% round 32px)' },
+          {
+            y: 0,
+            opacity: 1,
+            clipPath: 'inset(0% 0% 0% 0% round 32px)',
+            duration: 1.05,
+            ease: 'power4.out',
+            clearProps: 'clipPath,transform',
+          },
+        )
+        .from(
+          c.querySelectorAll('.e-pkg-list li'),
+          { y: -14, opacity: 0, duration: 0.5, ease: 'power3.out', stagger: 0.04 },
+          '-=0.5',
+        ),
+    );
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); intro(); works(); outro(); pk(); ScrollTrigger.refresh(); }));
+</script>
+
+<style>
+  /* Lebar konten semua section = hero & footer (tepi layar dikurangi gutter, tanpa batas 1600px) */
+  :global(main .wrap), :global(.site-header .wrap) { max-width: none; }
+  :global(html body .wa) { background: #fff; color: oklch(.45 .2 262); }
+  :global(html body .wa::after) { border-color: #fff; }
+  /* Section gelap di halaman ini benar-benar hitam seperti referensi */
+
+  .e-h2 { font-size: var(--text-4xl); line-height: 1.04; letter-spacing: -0.04em; font-weight: 500; text-wrap: normal; }
+  .e-h2 sup { position: relative; top: 0.06em; font-size: .32em; vertical-align: top; line-height: 1; letter-spacing: 0; color: var(--color-muted); }
+  .e-wk-title, .e-wk-all { will-change: transform, opacity; }
+  .e-wk-tail { white-space: nowrap; }
+  .e-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 4vw, 56px); }
+  .e-white { color: #fff; }
+  .e-mini { display: flex; gap: clamp(20px, 3vw, 48px); margin: 0; }
+  .e-mini dd { margin: 0; font-size: var(--text-3xl); line-height: 1; letter-spacing: -0.04em; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .e-mini dt { font-size: var(--text-xs); color: var(--color-muted); margin-top: 8px; max-width: 12ch; }
+  .e-mini > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; }
+  .e-mini > div:nth-child(2) dd { color: var(--color-accent); }
+
+  /* 1. Hero */
+  .e-hero { position: relative; overflow: clip; }
+  :global(html.js-anim) .e-hero { height: 100svh; overflow: hidden; }
+  .e-hero-top { position: relative; z-index: 3; display: grid; gap: 32px; padding-top: 120px; padding-bottom: clamp(24px, 3vw, 40px); }
+  .e-hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; will-change: transform; }
+  .e-faces { display: flex; }
+  .e-faces img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-bg); margin-left: -10px; }
+  .e-faces img:first-child { margin-left: 0; }
+  .e-hero-lead { display: grid; gap: 28px; will-change: transform; }
+  .e-lead { font-size: var(--text-2xl); line-height: 1.12; letter-spacing: -0.03em; font-weight: 500; max-width: 22ch; }
+  @media (max-width: 1023px) {
+    .e-hero-top { padding-top: 104px; gap: 24px; }
+    .e-hero-lead { order: 1; }
+    .e-hero-meta { order: 2; }
+  }
+  @media (max-width: 767px) {
+    .e-hero-top { padding-top: 96px; padding-bottom: 20px; gap: 18px; }
+    .e-hero-meta { gap: 12px; }
+    .e-faces img { width: 34px; height: 34px; }
+    .e-mini { display: none; }
+  }
+  @media (min-width: 1024px) {
+    .e-hero-top { grid-template-columns: 1fr 1fr; align-items: end; }
+    .e-hero-lead { justify-items: start; justify-self: end; width: fit-content; } /* teks + angka menempel ke sisi kanan */
+  }
+  .e-hero-img { position: relative; margin-inline: var(--gutter); height: clamp(320px, 58svh, 720px); border-radius: var(--radius); overflow: hidden; background: #0f3673; }
+  .e-hero-img img, .e-hero-img video { width: 100%; height: 115%; object-fit: cover; display: block; }
+  :global(html.js-anim) .e-hero-img img, :global(html.js-anim) .e-hero-img video { height: 100%; }
+  .e-hero-scrim { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(to bottom, oklch(0.14 0.04 255 / 0.56) 0%, oklch(0.14 0.04 255 / 0.14) 36%, oklch(0.14 0.04 255 / 0.12) 64%, oklch(0.14 0.04 255 / 0.64) 100%); }
+  .e-word { margin: clamp(8px, 1vw, 16px) 0 0; padding-inline: calc(var(--gutter) - .04em); font-size: 16.3vw; line-height: .82; letter-spacing: -0.065em; font-weight: 600; white-space: nowrap; padding-bottom: .26em; margin-bottom: -.18em; pointer-events: none; }
+  .e-word-in { display: inline-block; transform-origin: top left; will-change: transform, opacity; }
+  .e-word b { color: var(--orange); font-weight: 600; }
+  .e-word :global(div) { display: inline-block; }
+
+  /* 2. Intro */
+  .e-intro { position: relative; z-index: 4; min-height: 100svh; display: flex; align-items: center; justify-content: center; padding-top: clamp(96px, 12svh, 140px); padding-bottom: clamp(56px, 8svh, 120px); }
+  .io2-t { position: relative; font-size: var(--text-3xl); line-height: 1.2; letter-spacing: -0.035em; font-weight: 500; max-width: 32ch; margin: 0 auto; text-align: center; }
+  .io2-t :global(span), .io-pic { display: inline-block; will-change: opacity, filter; }
+  .io-pic { position: relative; z-index: 5; display: inline-block; width: 2.4em; height: .82em; margin-inline: .06em; border-radius: 999px; overflow: hidden; vertical-align: -.08em; }
+  .io-pic img { width: 100%; height: 100%; object-fit: cover; }
+
+  .io-morph-layer { display: none; }
+  :global(html.js-anim) .io-morph-layer { display: block; position: fixed; inset: 0; z-index: 10; pointer-events: none; visibility: hidden; }
+  .io-morph-card { position: fixed; top: 0; left: 0; width: 0; height: 0; overflow: hidden; will-change: transform, width, height, border-radius, opacity; visibility: hidden; }
+  .io-morph-card img { width: 100%; height: 110%; object-fit: cover; display: block; }
+  .io-morph-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, oklch(0 0 0 / .6), transparent 45%); opacity: var(--scrim, 0); pointer-events: none; }
+
+  /* 3. Works: foto selebar layar */
+  .e-wk { position: relative; padding-top: 0; padding-bottom: 0; overflow-x: clip; }
+  .e-wk-list { display: grid; gap: 0; }
+  .e-wk-item { position: relative; display: block; height: clamp(520px, 92svh, 1000px); overflow: hidden; color: #fff; }
+  .e-wk-img { position: absolute; inset: 0; z-index: 1; overflow: hidden; will-change: opacity; }
+  .e-wk-img img { width: 100%; height: 110%; object-fit: cover; will-change: transform; }
+  .e-wk-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, oklch(0 0 0 / .6), transparent 45%); }
+  .e-wk-cap { position: absolute; inset: auto 0 0; z-index: 15; display: grid; gap: 14px; padding-bottom: clamp(24px, 4vw, 56px); will-change: transform, opacity; }
+  .e-wk-n { opacity: .85; font-variant-numeric: tabular-nums; }
+  .e-wk-t { font-size: clamp(3rem, 1rem + 8.4vw, 10rem); line-height: .9; letter-spacing: -0.055em; font-weight: 600; max-width: 12ch; transition: translate var(--duration-slow) var(--ease-brand); } /* translate terpisah dari transform GSAP */
+  .e-wk-item:hover .e-wk-t, .e-wk-item:focus-visible .e-wk-t { translate: 16px 0; }
+  .e-wk-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .e-wk-tags li { padding: 7px 14px; border-radius: 999px; border: 1px solid oklch(1 0 0 / .55); background: oklch(1 0 0 / .14); backdrop-filter: blur(8px); font-size: var(--text-xs); }
+  .e-wk-tags .is-res { background: var(--orange); border-color: var(--orange); font-weight: 600; }
+
+
+  /* 5. Choose your package */
+  .e-pkg-side { text-align: right; }
+  .e-pkgs { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-rows: 1fr; align-items: stretch; gap: 12px; }
+  .e-pkg { display: grid; grid-template-rows: auto auto 1fr auto; gap: clamp(20px, 2vw, 28px); padding: clamp(22px, 2.4vw, 32px); border-radius: var(--radius); background: var(--color-surface); transition: translate var(--duration-slow) var(--ease-brand); }
+  .e-pkg:hover { translate: 0 -6px; }
+  .e-pkg header { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 28px; }
+  .e-badge { padding: 5px 12px; border-radius: 999px; background: var(--color-accent); color: #fff; font-size: var(--text-xs); font-weight: 600; }
+  .e-pkg-n { font-size: var(--text-xl); line-height: 1; font-weight: 500; letter-spacing: -0.03em; color: var(--color-muted); }
+  .e-pkg-name { font-size: var(--text-3xl); line-height: 1; letter-spacing: -0.04em; font-weight: 500; }
+  .e-pkg-tag { margin: 8px 0 0; font-size: var(--text-sm); color: var(--color-muted); }
+  .e-pkg-list { list-style: none; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--color-border); display: grid; align-content: start; gap: 12px; font-size: var(--text-base); line-height: 1.35; }
+  .e-pkg-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
+  .e-pkg-list li::before { content: "✓"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-accent); color: #fff; font-size: 11px; font-weight: 700; margin-top: 1px; }
+  .e-pkg footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .e-pkg-meta { margin: 0; font-size: var(--text-xs); color: var(--color-muted); }
+  .e-pkg-go { display: inline-flex; align-items: center; gap: 10px; padding: 6px 6px 6px 16px; border-radius: 999px; background: var(--color-fg); color: var(--color-bg); font-size: var(--text-sm); text-decoration: none; transition: background-color var(--duration-base); }
+  .e-pkg-go i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--color-bg); color: var(--color-fg); font-style: normal; transition: rotate var(--duration-base) var(--ease-brand); }
+  .e-pkg-go:hover i, .e-pkg-go:focus-visible i { rotate: 45deg; }
+  .e-pkg-go:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  .e-pkg-go:active { scale: .97; }
+  .e-pkg.is-acc { background: var(--orange); color: #fff; }
+  .e-pkg.is-acc :is(.e-pkg-n, .e-pkg-tag, .e-pkg-meta) { color: oklch(1 0 0 / .8); }
+  .e-pkg.is-acc .e-pkg-list { border-color: oklch(1 0 0 / .25); }
+  .e-pkg.is-acc .e-pkg-list li::before { background: #fff; color: oklch(.45 .2 262); }
+  .e-pkg.is-acc .e-pkg-go { background: #fff; color: oklch(.3 .15 262); }
+  .e-pkg.is-acc .e-badge { background: #fff; color: oklch(.45 .2 262); }
+  .e-pkg.is-acc .e-pkg-go i { background: oklch(.45 .2 262); color: #fff; }
+  @media (min-width: 1024px) {
+    .e-pkgs { grid-template-columns: repeat(3, 1fr); align-items: end; }
+    .e-pkg:nth-child(1) { min-height: 520px; }
+    .e-pkg:nth-child(2) { min-height: 580px; }
+    .e-pkg:nth-child(3) { min-height: 640px; }
+  }
+  .e-fine { margin-top: 16px; }
+
+</style>
