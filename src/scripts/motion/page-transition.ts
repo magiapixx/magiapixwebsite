@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { MOTION, $, store } from './tokens';
 
 const NAMES: Record<string, string> = { '/': 'Home', '/projects/': 'Projects', '/about/': 'About us', '/blog/': 'Journal' };
-const label = (a: HTMLAnchorElement) => NAMES[new URL(a.href).pathname] ?? (a.textContent?.trim().split('\n')[0].slice(0, 28) || 'Brooklynbyte');
+const label = (a: HTMLAnchorElement) => NAMES[new URL(a.href).pathname] ?? (a.textContent?.trim().split('\n')[0].slice(0, 28) || 'Magiapix');
 
 export function initPageTransition() {
   const pt = $('.pt')!, txt = $('.pt span')!;

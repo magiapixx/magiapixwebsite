@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://brooklynbyte.studio',
+  site: 'https://magiapix.com',
   trailingSlash: 'always',
   server: {
     host: '0.0.0.0',
