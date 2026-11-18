@@ -32,7 +32,7 @@ const packages = [
         <p class="type-small">24 people who<br />ship every week</p>
       </div>
       <div class="e-hero-lead" data-intro>
-        <h1 id="e-h1" class="e-lead">Strategy, brand, websites and products for companies ready for change.</h1>
+        <h1 id="e-h1" class="e-lead">Brand image, experiences and feels that come from unforgettable apps.</h1>
         <dl class="e-mini">
           <div><dd>10</dd><dt>Years of practice</dt></div>
           <div><dd>140+</dd><dt>Products shipped</dt></div>
@@ -52,13 +52,13 @@ const packages = [
       ></video>
       <div class="e-hero-scrim" aria-hidden="true"></div>
     </div>
-    <p class="e-word" aria-hidden="true"><span class="e-word-in"><span>brooklyn</span><b>byte</b></span></p>
+    <p class="e-word" aria-hidden="true"><span class="e-word-in"><span>magia</span><b>pix</b></span></p>
   </section>
 
   <!-- 2. Intro: kalimat besar dengan empat foto kapsul dari Selected Works di antara kata (melebar saat terlihat); kata abu-abu menjadi hitam mengikuti scroll -->
   <section class="sec e-intro io2" data-mood="paper" aria-label="About us">
     <div class="wrap">
-      <p class="io2-t" data-scrub>We are a design {selectedWorks[0] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[0].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[0].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and engineering studio driven by a love for clear ideas, honest interfaces {selectedWorks[1] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[1].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[1].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and code that lasts. We partner with founders {selectedWorks[2] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[2].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[2].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and teams to build brands {selectedWorks[3] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[3].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[3].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and products people come back to.</p>
+      <p class="io2-t" data-scrub>We design {selectedWorks[0] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[0].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[0].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and develop high-performance and aesthetic applications {selectedWorks[1] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[1].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[1].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} so your brand can stand {selectedWorks[2] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[2].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[2].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} out and gain more recognition in a highly competitive market {selectedWorks[3] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[3].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[3].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>}.</p>
     </div>
   </section>
 
@@ -202,6 +202,19 @@ const packages = [
       return targetTop - (word.offsetTop + wordIn.offsetTop);
     };
 
+    // Record resting colors once, before any tween touches them. With invalidateOnRefresh,
+    // a plain .to() re-reads its start on every refresh; if that happens mid-scroll the
+    // start becomes white and the text stays invisible on the white hero after scrolling back.
+    const restColor = (el: Element | null) => (el ? getComputedStyle(el).color : '');
+    const metaMutedEl = heroMeta?.querySelector<HTMLElement>('.muted') ?? null;
+    const miniLabelEls = heroLead ? [...heroLead.querySelectorAll<HTMLElement>('.e-mini dt')] : [];
+    const miniAccentEl = heroLead?.querySelector<HTMLElement>('.e-mini > div:nth-child(2) dd') ?? null;
+    const wordBoldEl = wordIn.querySelector<HTMLElement>('b');
+    const metaMutedColor = restColor(metaMutedEl);
+    const miniLabelColor = restColor(miniLabelEls[0] ?? null);
+    const miniAccentColor = restColor(miniAccentEl);
+    const wordBoldColor = restColor(wordBoldEl);
+
     const mm = gsap.matchMedia();
     mm.add('(min-width: 1px)', () => {
       gsap.set(heroTop, { position: 'relative', zIndex: 3 });
@@ -302,9 +315,8 @@ const packages = [
           },
           0,
         );
-        const metaMuted = heroMeta.querySelector<HTMLElement>('.muted');
-        if (metaMuted) {
-          tl.to(metaMuted, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
+        if (metaMutedEl) {
+          tl.fromTo(metaMutedEl, { color: metaMutedColor }, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
         }
       }
 
@@ -322,13 +334,11 @@ const packages = [
           },
           0,
         );
-        const miniLabels = heroLead.querySelectorAll<HTMLElement>('.e-mini dt');
-        if (miniLabels.length) {
-          tl.to(miniLabels, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
+        if (miniLabelEls.length) {
+          tl.fromTo(miniLabelEls, { color: miniLabelColor }, { color: 'rgba(255, 255, 255, 0.78)', duration: 0.5, ease: 'none' }, 0.2);
         }
-        const miniAccent = heroLead.querySelector<HTMLElement>('.e-mini > div:nth-child(2) dd');
-        if (miniAccent) {
-          tl.to(miniAccent, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
+        if (miniAccentEl) {
+          tl.fromTo(miniAccentEl, { color: miniAccentColor }, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
         }
       }
 
@@ -374,9 +384,8 @@ const packages = [
         0,
       );
 
-      const wordBold = wordIn.querySelector<HTMLElement>('b');
-      if (wordBold) {
-        tl.to(wordBold, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
+      if (wordBoldEl) {
+        tl.fromTo(wordBoldEl, { color: wordBoldColor }, { color: '#78b4ff', duration: 0.5, ease: 'none' }, 0.2);
       }
 
       if (headerLogo) {
@@ -865,7 +874,7 @@ const packages = [
   .e-hero-img img, .e-hero-img video { width: 100%; height: 115%; object-fit: cover; display: block; }
   :global(html.js-anim) .e-hero-img img, :global(html.js-anim) .e-hero-img video { height: 100%; }
   .e-hero-scrim { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(to bottom, oklch(0.14 0.04 255 / 0.56) 0%, oklch(0.14 0.04 255 / 0.14) 36%, oklch(0.14 0.04 255 / 0.12) 64%, oklch(0.14 0.04 255 / 0.64) 100%); }
-  .e-word { margin: clamp(8px, 1vw, 16px) 0 0; padding-inline: calc(var(--gutter) - .04em); font-size: 16.3vw; line-height: .82; letter-spacing: -0.065em; font-weight: 600; white-space: nowrap; padding-bottom: .26em; margin-bottom: -.18em; pointer-events: none; }
+  .e-word { margin: clamp(8px, 1vw, 16px) 0 0; padding-inline: calc(var(--gutter) - .04em); font-size: 24vw; line-height: .82; letter-spacing: -0.065em; font-weight: 600; white-space: nowrap; padding-bottom: .26em; margin-bottom: -.18em; pointer-events: none; }
   .e-word-in { display: inline-block; transform-origin: top left; will-change: transform, opacity; }
   .e-word b { color: var(--orange); font-weight: 600; }
   .e-word :global(div) { display: inline-block; }
@@ -886,13 +895,13 @@ const packages = [
   /* 3. Works: foto selebar layar */
   .e-wk { position: relative; padding-top: 0; padding-bottom: 0; overflow-x: clip; }
   .e-wk-list { display: grid; gap: 0; }
-  .e-wk-item { position: relative; display: block; height: clamp(520px, 92svh, 1000px); overflow: hidden; color: #fff; }
+  .e-wk-item { position: relative; display: block; height: 100vh; height: 100svh; overflow: hidden; color: #fff; }
   .e-wk-img { position: absolute; inset: 0; z-index: 1; overflow: hidden; will-change: opacity; }
   .e-wk-img img { width: 100%; height: 110%; object-fit: cover; will-change: transform; }
   .e-wk-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, oklch(0 0 0 / .6), transparent 45%); }
   .e-wk-cap { position: absolute; inset: auto 0 0; z-index: 15; display: grid; gap: 14px; padding-bottom: clamp(24px, 4vw, 56px); will-change: transform, opacity; }
   .e-wk-n { opacity: .85; font-variant-numeric: tabular-nums; }
-  .e-wk-t { font-size: clamp(3rem, 1rem + 8.4vw, 10rem); line-height: .9; letter-spacing: -0.055em; font-weight: 600; max-width: 12ch; transition: translate var(--duration-slow) var(--ease-brand); } /* translate terpisah dari transform GSAP */
+  .e-wk-t { font-size: clamp(3rem, 1rem + 8.4vw, 10rem); line-height: 1; letter-spacing: -0.055em; font-weight: 600; max-width: 12ch; padding-bottom: .14em; /* room for descenders (g, y, p) above the tags */ transition: translate var(--duration-slow) var(--ease-brand); } /* translate terpisah dari transform GSAP */
   .e-wk-item:hover .e-wk-t, .e-wk-item:focus-visible .e-wk-t { translate: 16px 0; }
   .e-wk-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .e-wk-tags li { padding: 7px 14px; border-radius: 999px; border: 1px solid oklch(1 0 0 / .55); background: oklch(1 0 0 / .14); backdrop-filter: blur(8px); font-size: var(--text-xs); }
