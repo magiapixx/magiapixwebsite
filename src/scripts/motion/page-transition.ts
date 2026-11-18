@@ -13,7 +13,7 @@ export function initPageTransition() {
     if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0 || a.target === '_blank') return;
     const url = new URL(a.href); if (url.origin !== location.origin || url.hash && url.pathname === location.pathname) return;
     if (/\.(xml|png|jpg|pdf)$/.test(url.pathname)) return;
-    e.preventDefault(); const name = a.matches('.prow,.next') ? (a.querySelector('.nm,.type-hero')?.textContent ?? a.textContent ?? '').trim() : label(a);
+    e.preventDefault(); const name = a.matches('.prow,.next') ? (a.querySelector('.nm,.next-title')?.textContent ?? a.textContent ?? '').trim() : label(a);
     txt.textContent = ''; pt.style.visibility = 'visible';
     gsap.timeline({ onComplete: () => { store.set('bb-pt', name); location.href = a.href; } })
       .fromTo(pt, { yPercent: 100 }, { yPercent: 0, duration: MOTION.base, ease: MOTION.c2 })

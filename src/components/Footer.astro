@@ -1,5 +1,11 @@
 ---
 import { SITE } from '../data/site';
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => {
+  const target = href.replace(/\/$/, '') || '/';
+  if (target === '/') return pathname === '/';
+  return pathname === target || pathname.startsWith(target + '/');
+};
 ---
 <footer class="site-footer" data-mood="paper">
   <div class="fgrid">
@@ -9,9 +15,16 @@ import { SITE } from '../data/site';
     </div>
   </div>
   <div class="flegal type-small muted">
-    <div class="flegal-links">
-      <p class="frow">{SITE.social.map((s) => <a class="flink muted" href={s.href}>{s.label}</a>)}</p>
-    </div>
+    <nav class="flegal-links" aria-label="Footer">
+      <p class="frow">
+        {SITE.nav.map((n) => {
+          const active = isActive(n.href);
+          return (
+            <a class:list={['flink', active ? 'is-active' : 'muted']} href={n.href} aria-current={active ? 'page' : undefined}>{n.label}</a>
+          );
+        })}
+      </p>
+    </nav>
     <a class="totop" href="#main">Back to top <span class="a" aria-hidden="true">↑</span></a>
   </div>
   <div class="wm" data-wordmark-rise aria-hidden="true"><p>{'magiapix'.split('').map((c, i) => <span class:list={{ 'wm-accent': i >= 5 }}>{c}</span>)}</p></div>
@@ -19,6 +32,7 @@ import { SITE } from '../data/site';
 
 <style>
   .wm .wm-accent { color: var(--color-accent); }
+  .flegal-links .is-active { color: var(--color-fg); }
   @media (max-width: 1023px) {
     .flegal { justify-content: space-between; column-gap: 16px; }
     .flegal-links { margin-left: auto; }

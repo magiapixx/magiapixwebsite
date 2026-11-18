@@ -67,7 +67,7 @@ export function initEffects() {
     if (img && !img.hasAttribute('data-parallax')) tl.from(img, { scale: 1.15, duration: MOTION.slow * 1.3, ease: MOTION.ease }, 0); });
   $$('[data-parallax]').forEach((el) => { const v = Math.abs(Number(el.dataset.parallax));
     gsap.fromTo(el, { yPercent: 0 }, { yPercent: -v, ease: 'none', scrollTrigger: { trigger: el.parentElement!, start: 'top bottom', end: 'bottom top', scrub: true } }); });
-  $$<HTMLImageElement>('main img:not(.preview img):not([data-parallax]):not(.e-hero-img img):not(.e-wk-item img):not(.io-morph-card img):not(.io-pic img)').forEach((img) => {
+  $$<HTMLImageElement>('main img:not(.preview img):not([data-parallax]):not(.e-hero-img img):not(.e-wk-item img):not(.io-morph-card img):not(.io-pic img):not(.next img)').forEach((img) => {
     const frame = img.parentElement;
     if (!frame) return;
     const { width, height } = frame.getBoundingClientRect();

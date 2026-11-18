@@ -34,7 +34,7 @@ const projectImages = await Promise.all(
   .prow { border-bottom-color: var(--project-divider-color); }
   .mobile-project-preview { display: none; }
   .mobile-project-preview-inner { min-height: 0; overflow: hidden; }
-  .mobile-project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; clip-path: inset(0 0 100% 0 round 16px); transition: clip-path var(--duration-slow) var(--ease-brand); }
+  .mobile-project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-card); clip-path: inset(0 0 100% 0 round var(--radius-card)); transition: clip-path var(--duration-slow) var(--ease-brand); }
 
   @media (max-width: 767px) {
     .project-entry { border-bottom: 1px solid var(--project-divider-color); }
@@ -43,7 +43,7 @@ const projectImages = await Promise.all(
     .mobile-project-preview-inner { padding-inline: 4px; }
     .project-entry.is-centered .mobile-project-preview { grid-template-rows: 1fr; opacity: 1; }
     .project-entry.is-centered .mobile-project-preview-inner { padding-bottom: 20px; }
-    .project-entry.is-centered .mobile-project-preview img { clip-path: inset(0 round 16px); }
+    .project-entry.is-centered .mobile-project-preview img { clip-path: inset(0 round var(--radius-card)); }
     :global(#pj-preview) { display: none; }
   }
 

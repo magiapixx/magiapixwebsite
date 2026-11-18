@@ -39,7 +39,10 @@ const { p, next } = Astro.props; const d = p.data;
   </div></section>
   <section class="sec" data-mood="night"><div class="wrap">
     <a class="next" href={`/projects/${next.id}/`} data-cursor="Next"><Image src={next.data.cover} alt="" widths={[800, 1600]} sizes="100vw" />
-      <div class="in"><span class="type-label">{next.data.categoryLabel}</span><span class="type-hero">{next.data.name}</span></div></a>
+      <div class="in">
+        <span class="type-label">Next project</span>
+        <div class="next-meta"><span class="type-label" style="opacity:.8">{next.data.categoryLabel}</span><span class="next-title">{next.data.name}</span></div>
+      </div></a>
   </div></section>
 </BaseLayout>
 
