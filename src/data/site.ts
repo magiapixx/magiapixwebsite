@@ -1,11 +1,11 @@
 import type { ImageMetadata } from 'astro';
 import data from './site.json';
 
-const contactEmail = 'hello@brooklynbyte.com';
+const contactEmail = 'hello@magiapix.com';
 
 export const SITE = {
-  name: 'Brooklynbyte',
-  url: 'https://brooklynbyte.studio',
+  name: 'Magiapix',
+  url: 'https://magiapix.com',
   email: contactEmail,
   emailHref: `mailto:${contactEmail}`,
   address: ['214 Wythe Ave', 'Brooklyn, NY 11249'],

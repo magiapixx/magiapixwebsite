@@ -8,7 +8,7 @@ import { initLenis } from './lenis';
 import { C2_EASE, motionOn, $ } from './motion/tokens';
 import { initMenu, initAccordions, initFilters, initVideo } from './motion/ui';
 import { initPageTransition, pageIn } from './motion/page-transition';
-import { initEffects, initPointer, initHeaderAndMood } from './motion/effects';
+import { initEffects, initPointer, initHeaderAndMood, initMobileProjectPreview } from './motion/effects';
 import { heroIn } from './motion/hero';
 import { runLoader } from './motion/loader';
 
@@ -22,6 +22,7 @@ const clk = $('[data-clock]');
 if (clk) { const tick = () => { clk.textContent = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/New_York' }).format(new Date()); }; tick(); setInterval(tick, 30000); }
 
 initMenu(); initAccordions(); initFilters(); initVideo();
+initMobileProjectPreview();
 
 if (!motionOn()) {
   root.classList.remove('is-loading', 'pt-cover');

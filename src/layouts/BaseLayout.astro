@@ -35,7 +35,7 @@ const { title, description, image, type, loader = false, noindex = false } = Ast
   </head>
   <body data-mood="night" class:list={{ 'wide-sections': Astro.url.pathname !== '/' }}>
     <a class="sr-only" href="#main">Skip to content</a>
-    {loader && <div class="loader" aria-hidden="true"><b>brooklynbyte</b><span class="ctr">[00]</span></div>}
+    {loader && <div class="loader" aria-hidden="true"><b>magiapix</b><span class="ctr">[00]</span></div>}
     <div class="pt" aria-hidden="true"><span></span></div>
     <Header />
     <Menu />
@@ -54,6 +54,8 @@ const { title, description, image, type, loader = false, noindex = false } = Ast
 </html>
 
 <style>
+  :global(body.wide-sections .site-header) { position: absolute; }
+  :global(body .site-header.is-solid) { box-shadow: none; }
   :global(body.wide-sections main .wrap) { max-width: none; }
   :global(body.wide-sections .site-header .wrap) { max-width: none; }
 </style>

@@ -8,6 +8,49 @@ import { MOTION, $, $$, finePointer } from './tokens';
 export const introTweens: gsap.core.Tween[] = [];
 export const padMasks = (s: SplitText) => (s.masks ?? []).forEach((m) => { (m as HTMLElement).style.paddingBottom = '0.14em'; (m as HTMLElement).style.marginBottom = '-0.14em'; });
 
+export function initMobileProjectPreview() {
+  const zone = $('[data-mobile-preview]');
+  if (!zone) return;
+  const entries = $$<HTMLElement>('.project-entry', zone);
+  if (!entries.length) return;
+  const mobile = matchMedia('(max-width: 767px)');
+  let frame = 0;
+
+  const update = () => {
+    frame = 0;
+    if (!mobile.matches) {
+      entries.forEach((entry) => entry.classList.remove('is-centered'));
+      return;
+    }
+
+    const center = window.innerHeight / 2;
+    let active: HTMLElement | null = null;
+    let closest = Infinity;
+    entries.forEach((entry) => {
+      if (entry.hidden) return;
+      const row = $('.prow', entry);
+      if (!row) return;
+      const rect = row.getBoundingClientRect();
+      if (rect.top > center || rect.bottom < center) return;
+      const distance = Math.abs((rect.top + rect.bottom) / 2 - center);
+      if (distance < closest) {
+        active = entry;
+        closest = distance;
+      }
+    });
+    entries.forEach((entry) => entry.classList.toggle('is-centered', entry === active));
+  };
+  const scheduleUpdate = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+
+  window.addEventListener('scroll', scheduleUpdate, { passive: true });
+  window.addEventListener('resize', scheduleUpdate, { passive: true });
+  mobile.addEventListener('change', scheduleUpdate);
+  zone.addEventListener('preview:hide', scheduleUpdate);
+  scheduleUpdate();
+}
+
 export function initEffects() {
   $$('[data-scramble]').forEach((el) => { const t = el.textContent ?? ''; gsap.to(el, { duration: 0.9, scrambleText: { text: t, chars: 'upperCase', speed: 0.5 }, scrollTrigger: { trigger: el, start: 'top 88%' } }); });
   $$('[data-split]').forEach((el) => {
@@ -71,8 +114,8 @@ export function initEffects() {
     let activeItem: HTMLElement | null = null;
     const hide = () => {
       activeItem = null;
-      gsap.killTweensOf(pv);
-      gsap.to(pv, { autoAlpha: 0, scale: 0.6, duration: MOTION.fast, overwrite: true });
+      gsap.killTweensOf(pv, 'autoAlpha,scale');
+      gsap.to(pv, { autoAlpha: 0, scale: 0.6, duration: MOTION.fast, overwrite: 'auto' });
     };
     const move = (e: PointerEvent) => {
       if (!activeItem || !zone.matches(':hover')) return;
@@ -88,9 +131,9 @@ export function initEffects() {
           gsap.killTweensOf(img);
           gsap.fromTo(img, { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: MOTION.base, ease: MOTION.c2, overwrite: true });
         }
-        gsap.killTweensOf(pv);
+        gsap.killTweensOf(pv, 'autoAlpha,scale');
         gsap.set(pv, { x: e.clientX + 24, y: e.clientY - 110 });
-        gsap.to(pv, { autoAlpha: 1, scale: 1, duration: MOTION.base, ease: MOTION.ease, overwrite: true });
+        gsap.to(pv, { autoAlpha: 1, scale: 1, duration: MOTION.base, ease: MOTION.ease, overwrite: 'auto' });
       });
       it.addEventListener('pointerleave', (e) => {
         const nextItem = e.relatedTarget instanceof Element ? e.relatedTarget.closest<HTMLElement>('[data-img]') : null;
@@ -152,61 +195,21 @@ export function initHeaderAndMood() {
     if (btn) gsap.set(btn, { y: 0, clearProps: 'color' });
   };
 
-  ScrollTrigger.create({
-    start: afterHeroStart,
-    end: 'max',
-    refreshPriority: -1,
-    invalidateOnRefresh: true,
-    onEnter: () => {
-      if (hero) {
+  if (!hero) gsap.set(header, { yPercent: 0 });
+
+  if (hero) {
+    ScrollTrigger.create({
+      start: afterHeroStart,
+      end: 'max',
+      refreshPriority: -1,
+      invalidateOnRefresh: true,
+      onEnter: () => {
         resetHeroHeaderItems();
         header.classList.add('is-solid');
-      }
-    },
-    onUpdate: (s) => {
-      if (s.direction === 1) {
-        gsap.to(header, {
-          yPercent: -110,
-          duration: MOTION.fast,
-          ease: 'power2.out',
-          overwrite: true,
-          onComplete: () => {
-            if (hero && window.scrollY > heroEnd()) {
-              resetHeroHeaderItems();
-              header.classList.add('is-solid');
-            }
-          },
-        });
-      } else {
-        if (hero && window.scrollY > afterHeroStart()) {
-          resetHeroHeaderItems();
-          header.classList.add('is-solid');
-          gsap.to(header, { yPercent: 0, duration: MOTION.fast, ease: 'power2.out', overwrite: true });
-        } else if (!hero) {
-          gsap.to(header, { yPercent: 0, duration: MOTION.fast, ease: 'power2.out', overwrite: true });
-        }
-      }
-    },
-    onLeaveBack: () => {
-      if (hero) {
-        if (window.scrollY > heroEnd()) {
-          gsap.to(header, {
-            yPercent: -110,
-            duration: 0.22,
-            ease: 'power2.out',
-            overwrite: true,
-            onComplete: () => {
-              if (window.scrollY > heroEnd() && window.scrollY <= afterHeroStart()) {
-                header.classList.remove('is-solid');
-              }
-            },
-          });
-        }
-      } else {
-        gsap.to(header, { yPercent: 0, duration: MOTION.fast, ease: 'power2.out', overwrite: true });
-      }
-    },
-  });
+      },
+      onLeaveBack: () => header.classList.remove('is-solid'),
+    });
+  }
 
   if (!hero) {
     // Halaman selain beranda: bar putih langsung aktif saat di-scroll 10px.

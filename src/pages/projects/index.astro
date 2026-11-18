@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { getImage } from 'astro:assets';
+import { getImage, Image } from 'astro:assets';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const filters = [['all', 'All'], ['branding', 'Branding'], ['web', 'Web'], ['product', 'Product'], ['campaign', 'Campaign']];
 
@@ -12,17 +12,43 @@ const projectImages = await Promise.all(
   })
 );
 ---
-<BaseLayout title="Projects" description="Selected brands, websites and products by Brooklynbyte, 2023–2026.">
+<BaseLayout title="Projects" description="Selected brands, websites and products by Magiapix, 2023–2026.">
   <section class="page-head" data-mood="night"><div class="wrap">
-    <h1 class="type-hero" data-split>Work that moved<br />the numbers.</h1>
+    <h1 class="type-hero" data-split>Our works</h1>
     <div class="row"><p class="type-lead muted" style="max-width:46ch" data-intro>A selection of brands, websites and products we designed and built between 2023 and 2026.</p>
       <div class="filters" data-filter="#plist" data-intro role="group" aria-label="Filter projects">{filters.map(([k, l]) => <button class="chip" type="button" data-f={k} aria-pressed={k === 'all' ? 'true' : 'false'}>{l}</button>)}</div></div>
   </div></section>
-  <section class="sec" data-mood="night" style="padding-top:0" data-preview="#pj-preview"><div class="wrap">
+  <section class="sec" data-mood="night" style="padding-top:0" data-preview="#pj-preview" data-mobile-preview><div class="wrap">
     <div class="plist" id="plist" data-stagger>
-      {projects.map((p, i) => <a class="prow" href={`/projects/${p.id}/`} data-cat={p.data.category} data-img={projectImages[i]} data-cursor="View"><span class="n type-small muted">{String(i + 1).padStart(2, '0')}</span><span class="nm">{p.data.name}</span><span class="cat type-small muted">{p.data.categoryLabel}</span><span class="type-small muted" style="text-align:right">{p.data.year}</span></a>)}
+      {projects.map((p, i) => <div class="project-entry" data-cat={p.data.category} data-img={projectImages[i]}>
+        <a class="prow" href={`/projects/${p.id}/`} data-cursor="View"><span class="n type-small muted">{String(i + 1).padStart(2, '0')}</span><span class="nm">{p.data.name}</span><span class="cat type-small muted">{p.data.categoryLabel}</span><span class="type-small muted" style="text-align:right">{p.data.year}</span></a>
+        <div class="mobile-project-preview" aria-hidden="true"><div class="mobile-project-preview-inner"><Image src={p.data.cover} alt="" widths={[480, 720]} sizes="(max-width: 767px) calc(100vw - 48px)" loading="lazy" /></div></div>
+      </div>)}
     </div></div>
     <div class="preview" id="pj-preview" aria-hidden="true"><img src={projectImages[0]} alt="" /></div>
   </section>
 </BaseLayout>
+
+<style>
+  .plist { --project-divider-color: color-mix(in srgb, var(--color-border) 50%, transparent); border-top-color: var(--project-divider-color); }
+  .prow { border-bottom-color: var(--project-divider-color); }
+  .mobile-project-preview { display: none; }
+  .mobile-project-preview-inner { min-height: 0; overflow: hidden; }
+  .mobile-project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 16px; clip-path: inset(0 0 100% 0 round 16px); transition: clip-path var(--duration-slow) var(--ease-brand); }
+
+  @media (max-width: 767px) {
+    .project-entry { border-bottom: 1px solid var(--project-divider-color); }
+    .project-entry :global(.prow) { padding-block: clamp(2.75rem, 11vw, 3rem); border-bottom: 0; }
+    .mobile-project-preview { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--duration-slow) var(--ease-brand), opacity var(--duration-slow) var(--ease-brand); }
+    .mobile-project-preview-inner { padding-inline: 4px; }
+    .project-entry.is-centered .mobile-project-preview { grid-template-rows: 1fr; opacity: 1; }
+    .project-entry.is-centered .mobile-project-preview-inner { padding-bottom: 20px; }
+    .project-entry.is-centered .mobile-project-preview img { clip-path: inset(0 round 16px); }
+    :global(#pj-preview) { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-project-preview, .mobile-project-preview img { transition: none; }
+  }
+</style>
 

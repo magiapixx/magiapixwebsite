@@ -9,8 +9,12 @@ export async function getStaticPaths() {
 interface Props { p: CollectionEntry<'projects'>; next: CollectionEntry<'projects'> }
 const { p, next } = Astro.props; const d = p.data;
 ---
-<BaseLayout title={d.name} description={`${d.name}: ${d.result}. ${d.categoryLabel} project by Brooklynbyte, ${d.year}.`} image={d.cover.src}>
+<BaseLayout title={d.name} description={`${d.name}: ${d.result}. ${d.categoryLabel} project by Magiapix, ${d.year}.`} image={d.cover.src}>
   <section class="page-head" data-mood="night"><div class="wrap">
+    <a class="project-back ulink type-small" href="/projects/">
+      <span class="project-back-arrow" aria-hidden="true">←</span>
+      Back to projects
+    </a>
     <h1 class="type-hero" data-split>{d.name}</h1>
     <p class="type-lead muted" style="margin-top:20px" data-intro>{d.result}</p>
     <dl class="pd-meta" style="margin-top:48px" data-intro>
@@ -38,3 +42,23 @@ const { p, next } = Astro.props; const d = p.data;
       <div class="in"><span class="type-label">{next.data.categoryLabel}</span><span class="type-hero">{next.data.name}</span></div></a>
   </div></section>
 </BaseLayout>
+
+<style>
+  .project-back {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.65em;
+    margin-bottom: clamp(24px, 3vw, 40px);
+    color: var(--color-muted);
+  }
+  .project-back:hover,
+  .project-back:focus-visible { color: var(--color-fg); }
+  .project-back:active { color: var(--color-accent); }
+  .project-back-arrow {
+    display: inline-block;
+    transition: transform var(--duration-fast) var(--ease-brand);
+  }
+  .project-back:hover .project-back-arrow,
+  .project-back:focus-visible .project-back-arrow { transform: translateX(-4px); }
+</style>

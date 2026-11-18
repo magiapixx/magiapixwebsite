@@ -16,4 +16,4 @@ const og = new URL(image, Astro.site);
 <meta property="og:image" content={og} />
 <meta property="og:site_name" content={SITE.name} />
 <meta name="twitter:card" content="summary_large_image" />
-<link rel="alternate" type="application/rss+xml" title="Brooklynbyte Journal" href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={`${SITE.name} Journal`} href="/rss.xml" />
