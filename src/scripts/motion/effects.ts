@@ -107,7 +107,16 @@ export function initEffects() {
     });
   });
   $$('[data-wipe]').forEach((el) => gsap.fromTo(el, { clipPath: 'inset(100% 0% 0% 0% round 48px 48px 0 0)' }, { clipPath: 'inset(0% 0% 0% 0% round 0px)', ease: 'none', scrollTrigger: { trigger: el, start: 'top 95%', end: 'top 30%', scrub: true } }));
-  if ($('.wm')) gsap.from($$('.wm span'), { yPercent: 105, duration: MOTION.slow, ease: MOTION.ease, stagger: 0.04, scrollTrigger: { trigger: '.wm', start: 'top 98%' } });
+  $$<HTMLElement>('[data-wordmark-rise]').forEach((wordmark) => {
+    const letters = $$('span', wordmark);
+    gsap.set(letters, { yPercent: 105 });
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      gsap.to(letters, { yPercent: 0, duration: MOTION.slow, ease: MOTION.ease, stagger: 0.04 });
+    }, { threshold: 0.01 });
+    observer.observe(wordmark);
+  });
   const rb = $('.readbar'); if (rb) gsap.to(rb, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.prose', start: 'top 60%', end: 'bottom bottom', scrub: true } });
   const nx = $('.next'); if (nx) gsap.fromTo($('img', nx), { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: nx, start: 'top bottom', end: 'bottom bottom', scrub: true } });
 }
