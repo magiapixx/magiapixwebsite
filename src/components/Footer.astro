@@ -19,4 +19,14 @@ import { SITE } from '../data/site';
 
 <style>
   .wm .wm-byte { color: var(--color-accent); }
+  @media (max-width: 1023px) {
+    .flegal { justify-content: space-between; column-gap: 16px; }
+    .flegal-links { margin-left: auto; }
+    .flegal-links .frow { column-gap: 16px; }
+    .totop {
+      order: -1;
+      position: static;
+      transform: none;
+    }
+  }
 </style>
