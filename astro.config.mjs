@@ -12,5 +12,5 @@ export default defineConfig({
   },
   devToolbar: { enabled: false },
   integrations: [sitemap()],
-  vite: { plugins: [tailwindcss()] },
+  vite: { plugins: [tailwindcss()], tsconfig: './tsconfig.json' },
 });

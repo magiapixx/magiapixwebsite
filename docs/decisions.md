@@ -35,3 +35,6 @@
 
 ## 2026-11-11 · Kontak utama melalui email
 - Ganti CTA dan tautan WhatsApp di seluruh situs dengan tautan email ke `hello@brooklynbyte.com`, sesuai permintaan owner. URL situs tetap `brooklynbyte.studio`. | owner / orchestrator
+
+## 2026-11-18 · Resolusi tsconfig Astro saat build
+- Pin `vite.tsconfig` ke `./tsconfig.json` agar Vite/Rolldown memakai konfigurasi proyek, bukan tsconfig di direktori induk yang memakai preset bare dan gagal di-resolve. `tsconfig.json` tetap extends preset strict Astro melalui path lokal; strict mode dan resolusi alias default tetap aktif. | orchestrator
