@@ -1,25 +1,60 @@
 ---
-// Halaman hukum (Terms & Conditions, Privacy Policy): judul, tanggal pembaruan, pengantar, lalu bagian bernomor.
+// Halaman hukum (Terms & Conditions, Privacy Policy), mengikuti referensi editorial: judul besar dua baris,
+// tanggal pembaruan bergaya mono, pengantar sempit di kiri, lalu tiap bagian dua kolom (judul bernomor
+// di kiri, isi di kanan).
 import BaseLayout from './BaseLayout.astro';
 interface Props { title: string; description: string; updated: string; intro: string }
 const { title, description, updated, intro } = Astro.props;
 ---
 <BaseLayout title={title} description={description}>
-  <section class="page-head" data-mood="night" style="padding-bottom:0"><div class="wrap">
-    <p class="type-label muted" data-intro>Last updated: {updated}</p>
-    <h1 class="type-hero" style="margin-top:20px" data-split>{title}</h1>
-    <p class="type-lead muted legal-intro" data-intro>{intro}</p>
+  <section class="page-head legal-head" data-mood="night"><div class="wrap">
+    <h1 class="type-hero legal-title" data-split>{title}</h1>
+    <p class="legal-updated" data-intro>Last updated: {updated}</p>
+    <p class="legal-intro" data-intro>{intro}</p>
   </div></section>
   <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap">
-    <article class="prose legal"><slot /></article>
+    <article class="legal"><slot /></article>
   </div></section>
 </BaseLayout>
 
 <style>
-  .legal-intro { max-width: 52ch; margin-top: 24px; }
-  /* Nomor bagian dibuat otomatis dari urutan h2 */
-  .legal { counter-reset: legal; }
-  .legal :global(h2) { counter-increment: legal; }
-  .legal :global(h2)::before { content: counter(legal) ". "; color: var(--color-muted); }
-  .legal :global(a) { text-decoration: underline; text-underline-offset: 3px; }
+  .legal-head { padding-bottom: clamp(48px, 7vw, 120px); }
+  /* Judul selalu pecah menjadi dua baris ("Terms &" / "Conditions", "Privacy" / "Policy") */
+  .legal-title { max-width: 8ch; line-height: 0.92; }
+  .legal-updated {
+    margin-top: clamp(48px, 6vw, 96px);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .legal-intro { max-width: 34rem; margin-top: 20px; font-size: var(--text-lg); line-height: 1.35; color: var(--color-muted); }
+
+  /* Dua kolom tanpa pembungkus per bagian: h2 selalu di kolom kiri dan memulai baris baru, semua isi
+     setelahnya mengalir di kolom kanan. Nomor bagian dibuat otomatis dari urutan h2. */
+  .legal { display: grid; grid-template-columns: 1fr; row-gap: 14px; counter-reset: legal; max-width: none; }
+  .legal :global(h2) {
+    grid-column: 1;
+    counter-increment: legal;
+    font-size: var(--text-xl);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+  }
+  .legal :global(h2)::before { content: counter(legal) ". "; }
+  .legal :global(h2:not(:first-child)) { margin-top: clamp(48px, 6vw, 96px); }
+  .legal > :global(:not(h2)) { grid-column: 1; }
+  .legal :global(p), .legal :global(ul) { color: var(--color-muted); font-size: var(--text-base); line-height: 1.55; }
+  .legal :global(strong) { color: var(--color-fg); font-weight: 600; }
+  .legal :global(ul) { list-style: disc; padding-left: 1.2em; display: grid; gap: 8px; }
+  .legal :global(a) { color: var(--color-fg); text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (min-width: 1024px) {
+    .legal { grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 120px); }
+    .legal > :global(:not(h2)) { grid-column: 2; }
+    /* Isi pertama sebuah bagian sejajar dengan judulnya */
+    .legal :global(h2:not(:first-child) + *) { margin-top: clamp(48px, 6vw, 96px); }
+    .legal :global(p) { text-align: justify; hyphens: auto; }
+  }
 </style>
