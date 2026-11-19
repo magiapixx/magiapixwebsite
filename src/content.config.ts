@@ -16,12 +16,15 @@ const projects = defineCollection({
     cover: image(),
     coverAlt: z.string(),
     coverVideo: z.string().optional(),
+    // Alamat situs yang sudah live; bila ada, halaman detail menampilkan tautan "Visit live site".
+    url: z.string().url().optional(),
     challenge: z.string(),
     approach: z.string(),
     metrics: z.array(z.object({ value: z.string(), label: z.string() })).length(3),
     gallery: z.array(image()),
-    quote: z.string(),
-    quoteBy: z.string(),
+    // Opsional: proyek klien nyata tanpa testimoni tidak diberi kutipan karangan.
+    quote: z.string().optional(),
+    quoteBy: z.string().optional(),
   }),
 });
 

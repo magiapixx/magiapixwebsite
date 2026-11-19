@@ -27,7 +27,14 @@ const year = new Date().getFullYear();
   <div class="fx-wm" aria-hidden="true"><p>{'magiapix'.split('').map((c) => <span>{c}</span>)}</p></div>
 
   <div class="fx-bar type-small">
-    <p class="fx-copy">© {year} Magiapix</p>
+    <!-- Hak cipta dan tautan halaman hukum di sel kiri baris bawah -->
+    <div class="fx-copy">
+      <p>© {year} Magiapix</p>
+      <ul class="fx-legal" aria-label="Legal">
+        <li><a class:list={[{ 'is-active': isActive('/terms-and-conditions/') }]} href="/terms-and-conditions/" aria-current={isActive('/terms-and-conditions/') ? 'page' : undefined}>Terms</a></li>
+        <li><a class:list={[{ 'is-active': isActive('/privacy-policy/') }]} href="/privacy-policy/" aria-current={isActive('/privacy-policy/') ? 'page' : undefined}>Privacy</a></li>
+      </ul>
+    </div>
     <nav class="fx-nav" aria-label="Footer">
       <ul>
         {SITE.nav.map((n) => {
@@ -48,8 +55,19 @@ const year = new Date().getFullYear();
   // Tombol email melayang menutupi "Back to top" dan mengulang tombol email di sini: sembunyikan saat footer terlihat.
   const fx = document.querySelector<HTMLElement>('.fx');
   const fab = document.querySelector<HTMLElement>('.email-contact');
-  if (fx && fab) {
-    new IntersectionObserver(([e]) => fab.classList.toggle('is-off', e.isIntersecting), { threshold: 0.15 }).observe(fx);
+  // Footer sticky (bottom:0) selalu berada di dalam layar di bawah <main>, jadi IntersectionObserver selalu
+  // menganggapnya terlihat. Footer benar-benar tersingkap saat dasar <main> naik melewati bawah layar; status ini
+  // dipasang sebagai html.footer-in supaya elemen melayang lain (mis. bar proyek) ikut menyingkir.
+  const main = document.getElementById('main');
+  if (fx && main) {
+    const sync = () => {
+      const on = main.getBoundingClientRect().bottom < innerHeight * 0.85;
+      document.documentElement.classList.toggle('footer-in', on);
+      fab?.classList.toggle('is-off', on);
+    };
+    addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', sync);
+    sync();
   }
 
   // "Back to top" melintasi semua section; jangan disela luncuran sekali-scroll di beranda.
@@ -123,7 +141,11 @@ const year = new Date().getFullYear();
     flex: none;
     padding: 0 var(--gutter) clamp(0.75rem, 2svh, 1.5rem);
   }
-  .fx-copy { opacity: .85; }
+  .fx-copy { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1rem; }
+  .fx-copy p { opacity: .85; }
+  .fx-legal { display: flex; gap: 1rem; list-style: none; margin: 0; padding: 0; }
+  .fx-legal a { color: #fff; opacity: .7; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: oklch(1 0 0 / .35); }
+  .fx-legal a:hover, .fx-legal a.is-active { opacity: 1; }
   .fx-nav ul { display: flex; flex-wrap: wrap; justify-content: center; list-style: none; margin: 0; padding: 0; }
   .fx-nav li + li::before { content: "|"; margin-inline: .75rem; opacity: .5; }
   .fx-nav a { color: #fff; opacity: .85; }

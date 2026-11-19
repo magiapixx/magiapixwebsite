@@ -1,0 +1,25 @@
+---
+// Halaman hukum (Terms & Conditions, Privacy Policy): judul, tanggal pembaruan, pengantar, lalu bagian bernomor.
+import BaseLayout from './BaseLayout.astro';
+interface Props { title: string; description: string; updated: string; intro: string }
+const { title, description, updated, intro } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <section class="page-head" data-mood="night" style="padding-bottom:0"><div class="wrap">
+    <p class="type-label muted" data-intro>Last updated: {updated}</p>
+    <h1 class="type-hero" style="margin-top:20px" data-split>{title}</h1>
+    <p class="type-lead muted legal-intro" data-intro>{intro}</p>
+  </div></section>
+  <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap">
+    <article class="prose legal"><slot /></article>
+  </div></section>
+</BaseLayout>
+
+<style>
+  .legal-intro { max-width: 52ch; margin-top: 24px; }
+  /* Nomor bagian dibuat otomatis dari urutan h2 */
+  .legal { counter-reset: legal; }
+  .legal :global(h2) { counter-increment: legal; }
+  .legal :global(h2)::before { content: counter(legal) ". "; color: var(--color-muted); }
+  .legal :global(a) { text-decoration: underline; text-underline-offset: 3px; }
+</style>
