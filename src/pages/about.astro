@@ -19,11 +19,11 @@ const pr = [['Small senior teams', 'Every project is led by the people you meet 
           Magiapix started in a Williamsburg loft in 2016 with three people
           <span class="d-pill"><Image src={img('studio-b')} alt="" width={240} height={120} loading="lazy" /></span>
           and one bank. Today we are 24 designers, engineers and strategists
-          <span class="d-pill"><Image src={img('t-1')} alt="" width={240} height={120} loading="lazy" /></span>
+          <span class="d-pill"><Image src={img('about-pill')} alt="" width={240} height={120} loading="lazy" /></span>
           still in Brooklyn, still shipping every week.
         </p>
         <figure class="ab-ed-fig">
-          <div class="ab-ed-img" data-clip><Image src={img('studio-a')} alt="Abstract blue 3D render" widths={[480, 800, 1100]} sizes="(min-width:1024px) 34vw, 92vw" loading="lazy" /></div>
+          <div class="ab-ed-img" data-clip><Image src={img('studio-a')} alt="Abstract blue 3D render" widths={[480, 800, 1100]} sizes="(min-width:1024px) 34vw, 92vw" loading="lazy" data-parallax="14" /></div>
           <figcaption class="type-caption muted">Abstract blue 3D render.</figcaption>
         </figure>
       </div>
@@ -40,7 +40,7 @@ const pr = [['Small senior teams', 'Every project is led by the people you meet 
   </div></section>
   <!-- Tim + angka (dipindah dari beranda E) -->
   <section class="e-team" data-mood="paper" aria-labelledby="e-team-t">
-    <div class="e-team-img" data-clip><Image src={img('studio-b')} alt="Abstract blue 3D render" widths={[900, 1600, 2200]} sizes="100vw" loading="lazy" /></div>
+    <div class="e-team-img" data-clip><Image src={img('studio-b')} alt="Abstract blue 3D render" widths={[900, 1600, 2200]} sizes="100vw" loading="lazy" data-parallax="14" /></div>
     <div class="wrap e-team-in">
       <dl class="e-team-stats" data-stagger>
         <div><dd>10</dd><dt>Years of experience</dt></div>
@@ -56,7 +56,7 @@ const pr = [['Small senior teams', 'Every project is led by the people you meet 
 
   <section class="sec" data-mood="paper"><div class="wrap">
     <SectionHead title="The people you'll work with." />
-    <div class="team" data-stagger>{team.map((m) => <figure><div class="img"><Image src={img(m.image)} alt="" widths={[400, 800]} sizes="(min-width: 1024px) 23vw, 46vw" /></div><figcaption><b class="type-small" style="display:block">{m.name}</b><span class="type-caption">{m.role}</span></figcaption></figure>)}</div>
+    <div class="team" data-stagger>{team.map((m) => <figure><div class="img"><Image src={img(m.image)} alt="" widths={[400, 800]} sizes="(min-width: 1024px) 23vw, 46vw" data-parallax="14" /></div><figcaption><b class="type-small" style="display:block">{m.name}</b><span class="type-caption">{m.role}</span></figcaption></figure>)}</div>
   </div></section>
   <Process />
   <Clients />
@@ -85,7 +85,8 @@ const pr = [['Small senior teams', 'Every project is led by the people you meet 
   /* 8. Team */
   .e-team { position: relative; }
   .e-team-img { height: clamp(420px, 80svh, 820px); overflow: hidden; }
-  .e-team-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  /* Gambar 120% tinggi frame: data-parallax menggesernya naik saat halaman di-scroll turun tanpa menyisakan celah. */
+  .e-team-img img { width: 100%; height: 120%; object-fit: cover; }
   .e-team-in { display: grid; gap: 32px; padding-block: clamp(40px, 5vw, 72px) var(--section); }
   .e-team-stats { display: flex; gap: clamp(24px, 4vw, 64px); margin: 0; flex-wrap: wrap; }
   .e-team-stats dd { margin: 0; font-size: var(--text-4xl); line-height: 1; letter-spacing: -0.05em; font-weight: 500; }
@@ -101,8 +102,8 @@ const pr = [['Small senior teams', 'Every project is led by the people you meet 
   .d-pill { display: inline-block; width: 2.1em; height: 0.86em; margin: 0 0.08em; border-radius: 999px; overflow: hidden; vertical-align: -0.06em; background: var(--color-surface); }
   .d-pill img { width: 100%; height: 100%; object-fit: cover; }
   .ab-ed-fig { display: grid; gap: 12px; margin: 0; }
-  .ab-ed-img { overflow: hidden; border-radius: var(--radius); }
-  .ab-ed-img img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .ab-ed-img { overflow: hidden; border-radius: var(--radius); aspect-ratio: 4 / 5; }
+  .ab-ed-img img { display: block; width: 100%; height: 120%; object-fit: cover; }
   .ab-ed-facts { display: grid; margin: clamp(48px, 6vw, 96px) 0 0; }
   .ab-ed-facts > div { display: grid; justify-items: center; gap: 28px; padding: 20px 16px; text-align: center; }
   .ab-ed-facts dd { margin: 0; font-size: clamp(2.4rem, 1.6rem + 2.6vw, 4.4rem); line-height: 1; letter-spacing: -0.04em; font-weight: 500; }

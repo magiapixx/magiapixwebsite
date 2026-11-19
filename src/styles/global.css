@@ -181,7 +181,8 @@ html.is-loading .loader{display:flex}
 .loader .ctr{font-variant-numeric:tabular-nums;color:var(--orange)}
 
 /* Kursor */
-.cursor{position:fixed;left:0;top:0;z-index:80;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--orange);pointer-events:none;display:grid;place-items:center;
+/* will-change + contain: titik kursor dipindah compositor di layer sendiri; tanpa ini posisi lamanya kadang tidak di-repaint dan meninggalkan jejak garis putus-putus di halaman */
+.cursor{position:fixed;left:0;top:0;z-index:80;will-change:transform;contain:layout paint;backface-visibility:hidden;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--orange);pointer-events:none;display:grid;place-items:center;
   color:oklch(.99 0 0);font-size:12px;font-weight:700;opacity:0;transition:width var(--duration-base) var(--ease-brand),height var(--duration-base) var(--ease-brand),margin var(--duration-base) var(--ease-brand),opacity var(--duration-fast)}
 .cursor span{opacity:0;transition:opacity var(--duration-fast)}
 .cursor.on{opacity:1}
@@ -200,7 +201,8 @@ html.no-motion .email-contact::after{animation:none}
 /* Section umum */
 .sec{padding-block:var(--section)}
 .sec-head{display:grid;gap:20px;margin-bottom:clamp(40px,5vw,72px)}
-@media (min-width:1024px){.sec-head{grid-template-columns:3fr 9fr;column-gap:24px;align-items:end}}
+/* Satu kolom: grid 3fr/9fr lama (sisa kolom label yang sudah dihapus) menjepit judul jadi satu kata per baris */
+.sec-head h2{max-width:22ch;text-wrap:balance}
 .lbl-dot{display:inline-flex;align-items:center;gap:10px}
 .lbl-dot::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--color-accent)}
 
@@ -352,8 +354,9 @@ main{position:relative;z-index:1;background:var(--color-bg);transition:backgroun
 .team{display:grid;grid-template-columns:repeat(2,1fr);gap:28px 16px}
 @media (min-width:1024px){.team{grid-template-columns:repeat(4,1fr)}}
 .team figure .img{border-radius:20px;overflow:hidden;aspect-ratio:4/5;background:var(--color-surface)}
-.team img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);transition:filter var(--duration-base) var(--ease-brand),transform var(--duration-base) var(--ease-brand)}
-.team figure:hover img{filter:none;transform:scale(1.04)}
+/* Tinggi 120%: data-parallax menggeser foto naik saat scroll; hover memakai properti scale agar tidak bentrok dengan transform parallax */
+.team img{width:100%;height:120%;object-fit:cover;transition:scale var(--duration-base) var(--ease-brand)}
+.team figure:hover img{scale:1.04}
 .team figcaption{margin-top:12px}
 .feat{display:grid;gap:28px;align-items:center;margin-bottom:64px}
 @media (min-width:1024px){.feat{grid-template-columns:7fr 5fr}}
