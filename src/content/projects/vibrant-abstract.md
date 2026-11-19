@@ -10,6 +10,7 @@ role: "Visual identity, digital art direction"
 result: "Brand awareness up 3.9×"
 cover: "../../assets/images/vibrant-abstract-1.jpg"
 coverAlt: "Dynamic abstract fluid waves with swirling blue, magenta, and gold ink splashes"
+coverVideo: "/media/vibrant-abstract.mp4"
 challenge: "Capturing the fluid spontaneity and vivid emotional resonance of mixed-media abstract art in a cohesive digital branding system."
 approach: "Crafted a vibrant visual identity system centered around fluid color dynamics, expressive wave textures, and immersive digital galleries."
 metrics:

@@ -23,7 +23,9 @@ const { p, next } = Astro.props; const d = p.data;
       <div><dt class="type-label muted">Year</dt><dd>{d.year}</dd></div>
       <div><dt class="type-label muted">Our role</dt><dd>{d.role}</dd></div>
     </dl>
-    <div class="pd-hero" data-clip><Image src={d.cover} alt={d.coverAlt} data-parallax="6" widths={[800, 1600]} sizes="100vw" loading="eager" /></div>
+    <div class="pd-hero" data-clip>{d.coverVideo
+      ? <video src={d.coverVideo} poster={d.cover.src} data-parallax="6" autoplay muted loop playsinline preload="auto" aria-label={d.coverAlt}></video>
+      : <Image src={d.cover} alt={d.coverAlt} data-parallax="6" widths={[800, 1600]} sizes="100vw" loading="eager" />}</div>
   </div></section>
   <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap">
     <div class="pd-sum" data-stagger>

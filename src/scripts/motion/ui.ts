@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MOTION, $, $$, motionOn, finePointer } from './tokens';
 import { getLenis } from '../lenis';
+import { suppressGlides } from '../glide';
 
 export function initMenu() {
   const menu = $('#menu'), btn = $('.menu-btn'); if (!menu || !btn) return;
@@ -41,6 +42,20 @@ export function initAccordions() {
     const btn = $('.acc-btn', it)!, panel = $('.acc-panel', it)!;
     btn.addEventListener('click', () => {
       const open = !it.classList.contains('open');
+      // Panel yang membuka/menutup mengubah tinggi halaman. Tanpa penahan, perubahan posisi scroll terbaca
+      // sebagai scroll pengguna dan memicu luncuran section (mis. ke footer). Jadi luncuran ditahan selama
+      // animasi, dan tombol yang diklik dijaga tetap di posisinya di layar: panel cukup mendorong isi di bawahnya.
+      suppressGlides(MOTION.base * 1000 + 400);
+      const top0 = btn.getBoundingClientRect().top;
+      const keep = () => {
+        const d = btn.getBoundingClientRect().top - top0;
+        if (Math.abs(d) < 0.5) return;
+        const lenis = getLenis();
+        if (lenis) lenis.scrollTo(window.scrollY + d, { immediate: true, force: true });
+        else window.scrollBy(0, d);
+      };
+      gsap.ticker.add(keep);
+      gsap.delayedCall(MOTION.base + 0.05, () => gsap.ticker.remove(keep));
       $$('.acc-item.open', it.parentElement!).forEach((o) => { if (o === it) return; o.classList.remove('open'); $('.acc-btn', o)!.setAttribute('aria-expanded', 'false');
         if (motionOn()) gsap.fromTo($('.acc-panel', o), { height: $('.acc-panel', o)!.offsetHeight }, { height: 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height' }); });
       it.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));

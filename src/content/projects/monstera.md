@@ -10,6 +10,7 @@ role: "Digital experience, visual botanical art"
 result: "User engagement up 4.2×"
 cover: "../../assets/images/monstera-1.jpg"
 coverAlt: "Macro close-up of a lush emerald green Monstera deliciosa leaf with intricate natural fenestrations"
+coverVideo: "/media/monstera.mp4"
 challenge: "Translating the organic, living beauty of botanical forms into high-resolution digital art and interactive spaces."
 approach: "Captured dramatic botanical lighting, deep rich emerald and golden bioluminescent tones, celebrating natural geometry."
 metrics:

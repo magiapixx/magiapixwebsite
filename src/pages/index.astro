@@ -5,21 +5,18 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE, img } from '../data/site';
+import { img } from '../data/site';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const selectedWorks = projects.slice(0, 4);
 const pad = (n: number) => String(n).padStart(2, '0');
 
-// Paket (menggantikan Our workflow + Pricing plans): fokus pada manfaat, harga hanya catatan kecil.
-// [CONTOH] Nama paket, manfaat, durasi, dan harga fiktif untuk mockup; ganti dengan data asli.
-const packages = [
-  { name: 'Basic', tag: 'A sharp start for a new product.', time: '2–3 days', from: 'from $87',
-    items: ['Logo and core visual identity', 'A fast one-page website', 'Social media starter kit', 'Two rounds of revisions', '14 days of launch support'] },
-  { name: 'Plus', tag: 'For teams ready to grow.', time: '1–2 weeks', from: 'from $425', badge: 'Most chosen',
-    items: ['Everything in Basic', 'A multi-page site you can edit yourself', 'UI design for your key product screens', 'Analytics and conversion setup', '30 days of launch support'] },
-  { name: 'Identity', tag: 'A complete brand, built to last.', time: '3–4 weeks', from: 'start from $1,500',
-    items: ['Brand strategy and positioning', 'Naming support and tone of voice', 'Full visual identity and guidelines', 'Website, motion and launch assets', 'A dedicated senior lead'] },
+// What we do: four disciplines, each with the image shown while its row is open.
+const disciplines = [
+  { name: 'Web design', text: 'Websites and interfaces with a clear structure and a distinct look, tested with real users.', image: 'p-northwind' },
+  { name: 'Creative web development', text: 'Motion, WebGL and scroll-driven storytelling, built fast and accessible.', image: 'p-halcyon' },
+  { name: 'Web app', text: 'Dashboards, portals and SaaS products built to last, with tests, docs and a clean handover.', image: 'p-meridian' },
+  { name: 'Brand visualization', text: 'Brand identities, 3D visuals and motion that make your product recognizable everywhere.', image: 'p-pulse' },
 ];
 ---
 <BaseLayout title="Magiapix" description="Magiapix is an independent design and engineering studio in Brooklyn. Strategy, brand, websites and products for startups and growing companies.">
@@ -58,7 +55,7 @@ const packages = [
   <!-- 2. Intro: kalimat besar dengan empat foto kapsul dari Selected Works di antara kata (melebar saat terlihat); kata abu-abu menjadi hitam mengikuti scroll -->
   <section class="sec e-intro io2" data-mood="paper" aria-label="About us">
     <div class="wrap">
-      <p class="io2-t" data-scrub>We design {selectedWorks[0] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[0].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[0].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} and develop high-performance and aesthetic applications {selectedWorks[1] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[1].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[1].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} so your brand can stand {selectedWorks[2] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[2].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[2].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>} out and gain more recognition in a highly competitive market {selectedWorks[3] && <span class="io-pic" aria-hidden="true"><Image src={selectedWorks[3].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[3].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></span>}.</p>
+      <p class="io2-t" data-scrub>We design {selectedWorks[0] && <span class="io-pic" aria-hidden="true">{selectedWorks[0].data.coverVideo ? <video src={selectedWorks[0].data.coverVideo} data-vplay muted loop playsinline preload="auto"></video> : <Image src={selectedWorks[0].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[0].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" />}</span>} and develop high-performance and aesthetic applications {selectedWorks[1] && <span class="io-pic" aria-hidden="true">{selectedWorks[1].data.coverVideo ? <video src={selectedWorks[1].data.coverVideo} data-vplay muted loop playsinline preload="auto"></video> : <Image src={selectedWorks[1].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[1].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" />}</span>} so your brand can stand {selectedWorks[2] && <span class="io-pic" aria-hidden="true">{selectedWorks[2].data.coverVideo ? <video src={selectedWorks[2].data.coverVideo} data-vplay muted loop playsinline preload="auto"></video> : <Image src={selectedWorks[2].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[2].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" />}</span>} out and gain more recognition in a highly competitive market {selectedWorks[3] && <span class="io-pic" aria-hidden="true">{selectedWorks[3].data.coverVideo ? <video src={selectedWorks[3].data.coverVideo} data-vplay muted loop playsinline preload="auto"></video> : <Image src={selectedWorks[3].data.cover} alt="" widths={[300, 600]} sizes="16vw" style={selectedWorks[3].id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" />}</span>}.</p>
     </div>
   </section>
 
@@ -71,7 +68,7 @@ const packages = [
     <div class="e-wk-list">
       {selectedWorks.map((p, i) => (
         <a class="e-wk-item" href={`/projects/${p.id}/`} data-cursor="View">
-          <div class="e-wk-img"><Image src={p.data.cover} alt={p.data.coverAlt} widths={[1280, 1920, 2400]} sizes="100vw" quality={95} style={p.id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" /></div>
+          <div class="e-wk-img">{p.data.coverVideo ? <video src={p.data.coverVideo} data-vplay muted loop playsinline preload="auto" aria-label={p.data.coverAlt}></video> : <Image src={p.data.cover} alt={p.data.coverAlt} widths={[1280, 1920, 2400]} sizes="100vw" quality={95} style={p.id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined} loading="eager" />}</div>
           <div class="wrap e-wk-cap">
             <span class="e-wk-n type-small">{pad(i + 1)} / {pad(projects.length)}</span>
             <h3 class="e-wk-t">{p.data.client}</h3>
@@ -86,7 +83,7 @@ const packages = [
   <div class="io-morph-layer" aria-hidden="true">
     {selectedWorks.map((p) => (
       <div class="io-morph-card">
-        <Image
+        {p.data.coverVideo ? <video src={p.data.coverVideo} data-vplay muted loop playsinline preload="auto"></video> : <Image
           src={p.data.cover}
           alt=""
           widths={[1280, 1920, 2400]}
@@ -94,38 +91,38 @@ const packages = [
           quality={95}
           style={p.id === 'floating-geometrical-layers' ? 'object-position: right center;' : undefined}
           loading="eager"
-        />
+        />}
       </div>
     ))}
   </div>
 
-  <!-- 5. Choose your package: kartu paket mendatar bertingkat (Basic → Identity), nama paket tegak di kiri, manfaat di depan, harga kecil; Plus berlatar biru -->
-  <section class="sec e-pk" data-mood="paper" aria-labelledby="e-pkg">
-    <div class="wrap">
-      <div class="e-head">
-        <h2 class="e-h2" id="e-pkg" data-split>Choose your package</h2>
-        <p class="type-small muted e-pkg-side">Every package comes with one senior team.<br />Pick the level that fits where you are.</p>
+  <!-- 4b. What we do: label + gambar di kiri (berganti sesuai baris yang terbuka), daftar disiplin besar berupa akordeon di kanan -->
+  <section class="sec e-wd" data-mood="paper" aria-labelledby="e-wd-t">
+    <div class="wrap e-wd-in">
+      <div class="e-wd-side">
+        <h2 class="e-h2 e-wd-t" id="e-wd-t" data-reveal>What we do <sup>({disciplines.length})</sup></h2>
+        <div class="e-wd-frame" data-clip aria-hidden="true">
+          {disciplines.map((d) => <Image class="e-wd-img" src={img(d.image)} alt="" widths={[480, 960]} sizes="(min-width: 1024px) 30vw, 92vw" />)}
+        </div>
       </div>
-      <ol class="e-pkgs">
-        {packages.map((p, i) => (
-          <li class:list={['e-pkg', { 'is-acc': i === 1 }]}>
-            <header>
-              <span class="e-pkg-n">{i + 1}.</span>
-              {p.badge && <span class="e-badge">{p.badge}</span>}
-            </header>
-            <div class="e-pkg-top">
-              <h3 class="e-pkg-name">{p.name}</h3>
-              <p class="e-pkg-tag">{p.tag}</p>
+      <div class="e-wd-main">
+        <div class="acc e-wd-list" data-stagger>
+          {disciplines.map((d, i) => (
+            <div class:list={['acc-item', { open: i === 0 }]}>
+              <button class="acc-btn" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`wd-${i}`}>
+                <span class="e-wd-name">{d.name}</span>
+                <span class="arr" aria-hidden="true">+</span>
+              </button>
+              <div class="acc-panel" id={`wd-${i}`}>
+                <div class="e-wd-body">
+                  <p>{d.text}</p>
+                  <div class="e-wd-pic" aria-hidden="true"><Image src={img(d.image)} alt="" widths={[480, 960]} sizes="92vw" /></div>
+                </div>
+              </div>
             </div>
-            <ul class="e-pkg-list">{p.items.map((it) => <li>{it}</li>)}</ul>
-            <footer>
-              <p class="e-pkg-meta">{p.time} · {p.from}</p>
-              <a class="e-pkg-go" href={SITE.emailHref} aria-label={`Email about ${p.name}`}><span>Start with {p.name}</span><i aria-hidden="true">↗</i></a>
-            </footer>
-          </li>
-        ))}
-      </ol>
-      <p class="type-caption muted e-fine">Packages and prices are examples for this mockup.</p>
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 
@@ -135,8 +132,64 @@ const packages = [
   import { gsap } from 'gsap';
   import { SplitText } from 'gsap/SplitText';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { glideTo, isGliding } from '../scripts/glide';
   gsap.registerPlugin(SplitText, ScrollTrigger);
   const root = document.documentElement;
+
+  // Setiap video proyek tampil di 3 tempat (kapsul About us, layer morph, kartu Selected works).
+  // Daripada 3 salinan yang di-decode bersamaan dan harus di-seek saat bergantian (frame lama tampil
+  // sesaat lalu meloncat), hanya 1 elemen video per proyek yang dipakai: elemen itu dipindah ke tempat
+  // yang sedang terlihat. Video yang dipindah dalam satu task tetap berputar tanpa jeda dan tanpa seek.
+  // Video dijeda bila tempatnya di luar layar.
+  interface VGroup { video: HTMLVideoElement; pill: HTMLElement | null; clone: HTMLElement | null; box: HTMLElement; item: HTMLElement }
+  const vInView = new WeakMap<Element, boolean>();
+  const morphLayerEl = document.querySelector<HTMLElement>('.io-morph-layer');
+  const pillEls = [...document.querySelectorAll<HTMLElement>('.io-pic')];
+  const cloneEls = [...document.querySelectorAll<HTMLElement>('.io-morph-card')];
+  const vGroups: VGroup[] = [];
+  [...document.querySelectorAll<HTMLElement>('.e-wk-item')].forEach((item, i) => {
+    const box = item.querySelector<HTMLElement>('.e-wk-img');
+    const video = box?.querySelector<HTMLVideoElement>('video[data-vplay]');
+    if (!box || !video) return;
+    const pill = pillEls[i] ?? null;
+    const clone = cloneEls[i] ?? null;
+    if (!root.classList.contains('no-motion')) {
+      pill?.querySelector('video[data-vplay]')?.remove();
+      clone?.querySelector('video[data-vplay]')?.remove();
+    }
+    vGroups.push({ video, pill, clone, box, item });
+  });
+  // Mobile: video sedikit membesar (1.15) selama di kapsul/layer morph, lalu zoom out pelan ke 1 dalam
+  // 1,2 detik begitu menjadi kartu Selected works. Memakai properti CSS `scale` (terpisah dari transform
+  // parallax GSAP) dan WAAPI, karena transisi CSS tidak jalan pada elemen yang baru dipindah induknya.
+  const mobileMq = matchMedia('(max-width: 767px)');
+  const zoomVideo = (v: HTMLVideoElement, inCard: boolean) => {
+    const target = mobileMq.matches && !inCard ? '1.15' : '1';
+    const from = v.style.scale || '1';
+    if (from === target) return;
+    v.style.scale = target;
+    v.animate([{ scale: from }, { scale: target }], { duration: 1200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
+  };
+  const syncVideos = () => {
+    if (root.classList.contains('no-motion')) return;
+    const layerOn = !morphLayerEl || morphLayerEl.style.visibility !== 'hidden';
+    for (const g of vGroups) {
+      let host: HTMLElement | null = null;
+      if (g.clone && layerOn && g.clone.style.visibility === 'visible') host = g.clone;
+      else if (g.box.style.opacity !== '0' && vInView.get(g.item)) host = g.box;
+      else if (g.pill && g.pill.style.visibility !== 'hidden' && vInView.get(g.pill)) host = g.pill;
+      if (host) {
+        if (g.video.parentElement !== host) host.prepend(g.video);
+        zoomVideo(g.video, host === g.box);
+        if (g.video.paused) g.video.play().catch(() => {});
+      } else if (!g.video.paused) g.video.pause();
+    }
+  };
+  const vObserver = new IntersectionObserver((entries) => {
+    entries.forEach((en) => vInView.set(en.target, en.isIntersecting));
+    syncVideos();
+  }, { rootMargin: '10% 0px' });
+  vGroups.forEach((g) => { vObserver.observe(g.item); if (g.pill) vObserver.observe(g.pill); });
   // Hero: saat di-scroll, image melebar penuh 100svh, elemen atas mengecil 60% di sisi atas image,
   // burger menu turun ke sisi kanan heading, dan logo kiri atas turun ke bawah menggantikan wordmark magiapix.
   const run = () => {
@@ -169,14 +222,17 @@ const packages = [
     const isMetaHidden = () => !heroMeta || getComputedStyle(heroMeta).display === 'none';
     const isLeadFirst = () => !!heroLead && !isMetaHidden() && heroLead.offsetTop < heroMeta!.offsetTop;
 
+    // Gap between the stacked, scaled-down headline and meta row on mobile/tablet.
+    const STACK_GAP = 24;
+
     const getMetaTargetTop = () => {
       if (isDesktop() || !heroLead || !isLeadFirst()) return getTargetTop();
-      return getTargetTop() + heroLead.offsetHeight * 0.6 + 12;
+      return getTargetTop() + heroLead.offsetHeight * 0.6 + STACK_GAP;
     };
 
     const getLeadTargetTop = () => {
       if (isDesktop() || isMetaHidden() || isLeadFirst()) return getTargetTop();
-      return getTargetTop() + heroMeta!.offsetHeight * 0.6 + 12;
+      return getTargetTop() + heroMeta!.offsetHeight * 0.6 + STACK_GAP;
     };
 
     const getMenuTargetTop = () => {
@@ -231,20 +287,26 @@ const packages = [
       if (heroMeta) gsap.set(heroMeta, { transformOrigin: 'top left' });
       if (heroLead) gsap.set(heroLead, { transformOrigin: isDesktop() ? 'top right' : 'top left' });
 
+      // Satu kali scroll memicu animasi penuh (bukan scrub): halaman meluncur sendiri ke akhir pin
+      // selama animasi berjalan, dan input scroll dikunci sampai selesai. Scroll ke atas dari bawah hero
+      // meluncur kembali ke paling atas dan animasinya diputar balik.
+      const glide = (to: number) => glideTo(to, 1.2);
+
       const tl = gsap.timeline({
         scrollTrigger: {
           id: 'e-hero',
           trigger: hero,
-          start: 'top top',
+          start: 'top top-=1',
           end: () => `+=${Math.max(1200, innerHeight * 1.55)}`,
           pin: true,
-          scrub: 0.35,
+          toggleActions: 'play none none reverse',
           anticipatePin: 1,
           refreshPriority: 10,
           invalidateOnRefresh: true,
           onRefresh: () => {
             if (heroLead) gsap.set(heroLead, { transformOrigin: isDesktop() ? 'top right' : 'top left' });
           },
+          onEnter: (self) => glide(self.end + 1),
           onLeave: () => {
             if (header) {
               header.classList.remove('is-solid');
@@ -252,7 +314,9 @@ const packages = [
               gsap.to(header, { yPercent: -110, duration: 0.25, ease: 'power2.out', overwrite: true });
             }
           },
-          onEnterBack: () => {
+          onEnterBack: (self) => {
+            glide(0);
+            self.animation?.reverse();
             if (header) {
               header.classList.remove('is-solid');
               if (headerLogo) gsap.set(headerLogo, { autoAlpha: 0 });
@@ -405,12 +469,12 @@ const packages = [
   const outro = () => {
     if (root.classList.contains('no-motion')) return;
     const ct = document.querySelector<HTMLElement>('.e-cta-t');
-    if (ct) { const sp = new SplitText(ct, { type: 'words', aria: 'none' }); gsap.from(sp.words, { yPercent: 60, opacity: 0, duration: 0.9, ease: 'power4.out', stagger: 0.04, scrollTrigger: { trigger: '.e-cta', start: 'top 70%' } }); }
+    if (ct) { const sp = new SplitText(ct, { type: 'words', aria: 'none' }); gsap.from(sp.words, { yPercent: 60, opacity: 0, duration: 0.9, ease: 'power4.out', stagger: 0.04, scrollTrigger: { trigger: ct, start: 'top 80%' } }); }
   };
   const works = () => {
     if (root.classList.contains('no-motion')) return;
     document.querySelectorAll<HTMLElement>('.e-wk-item').forEach((it, idx) => {
-      gsap.fromTo(it.querySelector('img'), { yPercent: 0 }, { yPercent: -8, ease: 'none', scrollTrigger: { trigger: it, start: 'top top', end: 'bottom top', scrub: true } });
+      gsap.fromTo(it.querySelector('.e-wk-img img') ?? vGroups[idx]?.video ?? null, { yPercent: 0 }, { yPercent: -8, ease: 'none', scrollTrigger: { trigger: it, start: 'top top', end: 'bottom top', scrub: true } });
       if (idx >= 4) {
         gsap.from(it.querySelectorAll('.e-wk-n, .e-wk-t, .e-wk-tags li'), {
           y: 24,
@@ -461,12 +525,14 @@ const packages = [
         return ex;
       });
 
+    const EXPAND_SHARE = 0.6;
     const tl = gsap.timeline({
       scrollTrigger: {
         id: 'e-intro',
         trigger: introSec,
         start: 'top top',
-        end: () => `+=${Math.max(1200, innerHeight * 1.8)}`,
+        // Pin diperpanjang 60%: bagian akhir dipakai gambar pertama untuk melebar penuh layar.
+        end: () => `+=${Math.max(1200, innerHeight * 1.8) * (1 + EXPAND_SHARE)}`,
         pin: true,
         scrub: 0.35,
         anticipatePin: 1,
@@ -492,6 +558,8 @@ const packages = [
 
     // Beri jeda singkat setelah seluruh kalimat tajam sebelum melepas pin ke section berikutnya
     tl.to({}, { duration: 0.6 });
+    // Sisa pin (fase melebar) tidak menggerakkan kalimat; ditangani updateMorph.
+    tl.to({}, { duration: tl.duration() * EXPAND_SHARE });
 
     // Setelah About Us selesai di-scroll, ke-4 gambar kapsul berpindah turun dan membentuk 4 kartu di Selected Works
     const pics = Array.from(sc.querySelectorAll<HTMLElement>('.io-pic'));
@@ -518,6 +586,7 @@ const packages = [
       const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
       let introEndScroll = 0;
+      let expandStart = 0;
       let picBase: BoxRect[] = [];
       let cardMetrics: { docTop: number; left: number; width: number; height: number }[] = [];
       let endScrolls: number[] = [];
@@ -549,6 +618,8 @@ const packages = [
       const measure = () => {
         const introTrig = ScrollTrigger.getById('e-intro');
         introEndScroll = introTrig ? introTrig.end : introSec.getBoundingClientRect().bottom + scrollY - innerHeight;
+        const introStart = introTrig ? introTrig.start : introEndScroll;
+        expandStart = introStart + (introEndScroll - introStart) / (1 + EXPAND_SHARE);
 
         const ir = introSec.getBoundingClientRect();
         picBase = pics.map((p) => {
@@ -573,6 +644,8 @@ const packages = [
         });
 
         endScrolls = cardMetrics.map((m) => Math.max(introEndScroll + 200, Math.round(m.docTop - innerHeight * 0.04)));
+        // Kartu pertama tepat di bawah About Us: gambar penuh layar ditukar saat kartu sampai di atas layar.
+        endScrolls[0] = Math.max(introEndScroll + 1, Math.round(cardMetrics[0].docTop));
       };
 
       const applyRect = (el: HTMLElement, box: BoxRect, opacity: number, shadowAlpha: number, scrimAlpha: number) => {
@@ -650,7 +723,7 @@ const packages = [
         if (!picBase.length || !endScrolls.length) return;
         const lastEnd = endScrolls[endScrolls.length - 1];
 
-        if (sy <= introEndScroll) {
+        if (sy <= expandStart) {
           if (wasPastIntro) {
             wasPastIntro = false;
             setAboutExitProgress(0);
@@ -680,9 +753,11 @@ const packages = [
         morphLayer.style.visibility = 'visible';
         pics.forEach((p) => { p.style.visibility = 'hidden'; });
 
-        const p0 = clamp01((sy - introEndScroll) / Math.max(1, endScrolls[0] - introEndScroll));
-        setAboutExitProgress(p0 / 0.42);
-        setWorksHeadProgress((p0 - 0.22) / 0.52);
+        // pe: gambar pertama melebar selama sisa pin About Us. ph: layar penuh menunggu kartu pertama naik.
+        const pe = clamp01((sy - expandStart) / Math.max(1, introEndScroll - expandStart));
+        const ph = clamp01((sy - introEndScroll) / Math.max(1, endScrolls[0] - introEndScroll));
+        setAboutExitProgress(pe / 0.6);
+        setWorksHeadProgress((ph - 0.3) / 0.6);
 
         for (let i = 0; i < clones.length; i++) {
           const clone = clones[i];
@@ -698,22 +773,24 @@ const packages = [
           };
 
           if (i === 0) {
-            if (p0 >= 1) {
+            if (sy >= endScrolls[0]) {
               clone.style.visibility = 'hidden';
               if (cardBox) cardBox.style.opacity = '1';
               setCapProgress(cardCap, 1);
             } else {
-              const e = easeInOutCubic(p0);
+              const e = easeInOutCubic(pe);
+              // Target: layar penuh (100vh) di atas layar, sama dengan ukuran kartu pertama.
+              const full: BoxRect = { left: targetBox.left, top: 0, width: targetBox.width, height: targetBox.height, radius: 0 };
               const box: BoxRect = {
-                left: lerp(picBase[0].left, targetBox.left, e),
-                top: lerp(picBase[0].top, targetBox.top, e),
-                width: lerp(picBase[0].width, targetBox.width, e),
-                height: lerp(picBase[0].height, targetBox.height, e),
+                left: lerp(picBase[0].left, full.left, e),
+                top: lerp(picBase[0].top, full.top, e),
+                width: lerp(picBase[0].width, full.width, e),
+                height: lerp(picBase[0].height, full.height, e),
                 radius: lerp(picBase[0].radius, 0, e),
               };
-              if (cardBox) cardBox.style.opacity = p0 >= 0.985 ? '1' : '0';
-              setCapProgress(cardCap, (p0 - 0.72) / 0.28);
-              applyRect(clone, box, 1, (1 - p0) * 0.8, e);
+              if (cardBox) cardBox.style.opacity = '0';
+              setCapProgress(cardCap, (ph - 0.72) / 0.28);
+              applyRect(clone, box, 1, (1 - pe) * 0.8, e);
             }
             continue;
           }
@@ -732,7 +809,7 @@ const packages = [
             setCapProgress(cardCap, 0);
             // Fase 1: turun serentak (sedikit bertahap) dari About Us ke posisi dock kartu di Selected Works
             const delay = i * 0.06;
-            const localP = clamp01((p0 - delay) / Math.max(0.01, 1 - delay));
+            const localP = clamp01((pe - delay) / Math.max(0.01, 1 - delay));
             const e = easeInOutCubic(localP);
             const box: BoxRect = {
               left: lerp(picBase[i].left, dock.left, e),
@@ -770,60 +847,49 @@ const packages = [
         start: 0,
         end: 'max',
         refreshPriority: -1,
-        onRefresh: (self) => {
-          measure();
-          updateMorph(self.scroll());
-        },
-        onUpdate: (self) => updateMorph(self.scroll()),
+        onUpdate: (self) => { updateMorph(self.scroll()); syncVideos(); },
       });
+      // Ukur SETELAH refresh selesai. Selama refresh GSAP melepas sementara semua pin, jadi posisi kartu yang
+      // diukur di onRefresh tidak menyertakan jarak pin (kartu 1 terbaca ~3500px terlalu atas) dan luncuran
+      // About us/kartu meluncur ke tempat yang salah (sampai ke footer).
+      ScrollTrigger.addEventListener('refresh', () => {
+        measure();
+        updateMorph(window.scrollY);
+        syncVideos();
+      });
+
+      // Luncuran sekali-scroll, dicek tiap scroll memakai posisi hasil measure() (bukan start/end ScrollTrigger
+      // yang dihitung saat pin dilepas). Toleransi 3px menahan posisi pecahan piksel setelah luncuran
+      // (layar DPR tinggi) agar tidak memicu luncuran berantai.
+      // - About us ke Selected works: begitu kalimat selesai dan pengguna scroll lagi, halaman meluncur 2,6 detik
+      //   sampai kartu pertama tepat di atas layar (gambar pertama melebar penuh selama luncuran); scroll ke atas
+      //   dari kartu pertama meluncur balik ke kalimat.
+      // - Kartu Selected works: satu kali scroll pindah ke kartu berikutnya/sebelumnya (1,6 detik); selama
+      //   luncuran, mini-card di dock melebar menjadi kartu berikutnya.
+      const stepCount = Math.min(cards.length, pics.length);
+      const cardTop = (k: number) => Math.round(cardMetrics[k]?.docTop ?? 0);
+      let lastGlideY = window.scrollY;
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const dir = Math.sign(y - lastGlideY);
+        lastGlideY = y;
+        if (!dir || isGliding() || !endScrolls.length) return;
+        const introA = Math.round(expandStart), introB = Math.round(endScrolls[0]);
+        if (introB > introA && y > introA + 3 && y < introB - 3) {
+          glideTo(dir > 0 ? introB : introA - 1, 2.6, easeInOutCubic);
+          return;
+        }
+        for (let k = 0; k < stepCount - 1; k++) {
+          const a = cardTop(k), b = cardTop(k + 1);
+          if (y > a + 3 && y < b - 3) {
+            glideTo(dir > 0 ? b : a, 1.6, easeInOutCubic);
+            return;
+          }
+        }
+      }, { passive: true });
     }
   };
-  // Kartu paket: masuk turun dari atas ke bawah secara berurutan (Basic → Plus → Identity).
-  const pk = () => {
-    if (root.classList.contains('no-motion')) return;
-    const cards = gsap.utils.toArray<HTMLElement>('.e-pkg');
-    const list = document.querySelector('.e-pkgs');
-    if (!list || !cards.length) return;
-    if (!matchMedia('(min-width: 1024px)').matches) {
-      cards.forEach((c) =>
-        gsap.fromTo(
-          c,
-          { y: -56, opacity: 0, clipPath: 'inset(0% 0% 100% 0% round 24px)' },
-          {
-            y: 0,
-            opacity: 1,
-            clipPath: 'inset(0% 0% 0% 0% round 24px)',
-            duration: 0.9,
-            ease: 'power3.out',
-            clearProps: 'clipPath,transform',
-            scrollTrigger: { trigger: c, start: 'top 85%' },
-          },
-        ),
-      );
-      return;
-    }
-    cards.forEach((c, i) =>
-      gsap.timeline({ scrollTrigger: { trigger: list, start: 'top 78%' }, delay: i * 0.14 })
-        .fromTo(
-          c,
-          { y: -88, opacity: 0, clipPath: 'inset(0% 0% 100% 0% round 32px)' },
-          {
-            y: 0,
-            opacity: 1,
-            clipPath: 'inset(0% 0% 0% 0% round 32px)',
-            duration: 1.05,
-            ease: 'power4.out',
-            clearProps: 'clipPath,transform',
-          },
-        )
-        .from(
-          c.querySelectorAll('.e-pkg-list li'),
-          { y: -14, opacity: 0, duration: 0.5, ease: 'power3.out', stagger: 0.04 },
-          '-=0.5',
-        ),
-    );
-  };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); intro(); works(); outro(); pk(); ScrollTrigger.refresh(); }));
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); intro(); works(); outro(); ScrollTrigger.refresh(); }));
 </script>
 
 <style>
@@ -837,6 +903,11 @@ const packages = [
   .e-h2 sup { position: relative; top: 0.06em; font-size: .32em; vertical-align: top; line-height: 1; letter-spacing: 0; color: var(--color-muted); }
   .e-wk-title, .e-wk-all { will-change: transform, opacity; }
   .e-wk-tail { white-space: nowrap; }
+  .e-wk .e-wk-title { font-size: var(--text-xl); }
+  /* Judul Selected works menimpa kartu pertama, supaya gambar penuh layar dari About Us langsung menjadi kartu itu. */
+  .e-wk .e-wk-head { position: absolute; top: 0; left: 0; right: 0; z-index: 16; margin: 0; padding-top: clamp(1.5rem, 4vw, 3.5rem); color: #fff; pointer-events: none; }
+  .e-wk-head a { pointer-events: auto; color: #fff; }
+  .e-wk-head sup { color: oklch(1 0 0 / .7); }
   .e-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(28px, 4vw, 56px); }
   .e-white { color: #fff; }
   .e-mini { display: flex; gap: clamp(20px, 3vw, 48px); margin: 0; }
@@ -884,12 +955,14 @@ const packages = [
   .io2-t { position: relative; font-size: var(--text-3xl); line-height: 1.2; letter-spacing: -0.035em; font-weight: 500; max-width: 32ch; margin: 0 auto; text-align: center; }
   .io2-t :global(span), .io-pic { display: inline-block; will-change: opacity, filter; }
   .io-pic { position: relative; z-index: 5; display: inline-block; width: 2.4em; height: .82em; margin-inline: .06em; border-radius: 999px; overflow: hidden; vertical-align: -.08em; }
-  .io-pic img { width: 100%; height: 100%; object-fit: cover; }
+  .io-pic img, .io-pic video { width: 100%; height: 100%; object-fit: cover; display: block; }
 
   .io-morph-layer { display: none; }
   :global(html.js-anim) .io-morph-layer { display: block; position: fixed; inset: 0; z-index: 10; pointer-events: none; visibility: hidden; }
   .io-morph-card { position: fixed; top: 0; left: 0; width: 0; height: 0; overflow: hidden; will-change: transform, width, height, border-radius, opacity; visibility: hidden; }
-  .io-morph-card img { width: 100%; height: 110%; object-fit: cover; display: block; }
+  .io-morph-card img, .io-morph-card video { width: 100%; height: 110%; object-fit: cover; display: block; }
+  /* Video kartu dipindah ke kapsul/layer morph; parallax GSAP di kartu tidak boleh ikut menggeser di sana. */
+  .io-pic :global(video), .io-morph-card :global(video) { transform: none !important; }
   .io-morph-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, oklch(0 0 0 / .6), transparent 45%); opacity: var(--scrim, 0); pointer-events: none; }
 
   /* 3. Works: foto selebar layar */
@@ -897,50 +970,58 @@ const packages = [
   .e-wk-list { display: grid; gap: 0; }
   .e-wk-item { position: relative; display: block; height: 100vh; height: 100svh; overflow: hidden; color: #fff; }
   .e-wk-img { position: absolute; inset: 0; z-index: 1; overflow: hidden; will-change: opacity; }
-  .e-wk-img img { width: 100%; height: 110%; object-fit: cover; will-change: transform; }
+  .e-wk-img img, .e-wk-img video { width: 100%; height: 110%; object-fit: cover; display: block; will-change: transform; }
   .e-wk-img::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, oklch(0 0 0 / .6), transparent 45%); }
   .e-wk-cap { position: absolute; inset: auto 0 0; z-index: 15; display: grid; gap: 14px; padding-bottom: clamp(24px, 4vw, 56px); will-change: transform, opacity; }
   .e-wk-n { opacity: .85; font-variant-numeric: tabular-nums; }
-  .e-wk-t { font-size: clamp(3rem, 1rem + 8.4vw, 10rem); line-height: 1; letter-spacing: -0.055em; font-weight: 600; max-width: 12ch; padding-bottom: .14em; /* room for descenders (g, y, p) above the tags */ transition: translate var(--duration-slow) var(--ease-brand); } /* translate terpisah dari transform GSAP */
+  .e-wk-t { font-size: var(--text-display); line-height: 1; letter-spacing: -0.045em; font-weight: 600; max-width: 12ch; padding-bottom: .14em; /* room for descenders (g, y, p) above the tags */ transition: translate var(--duration-slow) var(--ease-brand); } /* translate terpisah dari transform GSAP */
   .e-wk-item:hover .e-wk-t, .e-wk-item:focus-visible .e-wk-t { translate: 16px 0; }
   .e-wk-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .e-wk-tags li { padding: 7px 14px; border-radius: 999px; border: 1px solid oklch(1 0 0 / .55); background: oklch(1 0 0 / .14); backdrop-filter: blur(8px); font-size: var(--text-xs); }
   .e-wk-tags .is-res { background: var(--orange); border-color: var(--orange); font-weight: 600; }
 
 
-  /* 5. Choose your package */
-  .e-pkg-side { text-align: right; }
-  .e-pkgs { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-rows: 1fr; align-items: stretch; gap: 12px; }
-  .e-pkg { display: grid; grid-template-rows: auto auto 1fr auto; gap: clamp(20px, 2vw, 28px); padding: clamp(22px, 2.4vw, 32px); border-radius: var(--radius); background: var(--color-surface); transition: translate var(--duration-slow) var(--ease-brand); }
-  .e-pkg:hover { translate: 0 -6px; }
-  .e-pkg header { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 28px; }
-  .e-badge { padding: 5px 12px; border-radius: 999px; background: var(--color-accent); color: #fff; font-size: var(--text-xs); font-weight: 600; }
-  .e-pkg-n { font-size: var(--text-xl); line-height: 1; font-weight: 500; letter-spacing: -0.03em; color: var(--color-muted); }
-  .e-pkg-name { font-size: var(--text-3xl); line-height: 1; letter-spacing: -0.04em; font-weight: 500; }
-  .e-pkg-tag { margin: 8px 0 0; font-size: var(--text-sm); color: var(--color-muted); }
-  .e-pkg-list { list-style: none; margin: 0; padding: 18px 0 0; border-top: 1px solid var(--color-border); display: grid; align-content: start; gap: 12px; font-size: var(--text-base); line-height: 1.35; }
-  .e-pkg-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
-  .e-pkg-list li::before { content: "✓"; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--color-accent); color: #fff; font-size: 11px; font-weight: 700; margin-top: 1px; }
-  .e-pkg footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .e-pkg-meta { margin: 0; font-size: var(--text-xs); color: var(--color-muted); }
-  .e-pkg-go { display: inline-flex; align-items: center; gap: 10px; padding: 6px 6px 6px 16px; border-radius: 999px; background: var(--color-fg); color: var(--color-bg); font-size: var(--text-sm); text-decoration: none; transition: background-color var(--duration-base); }
-  .e-pkg-go i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--color-bg); color: var(--color-fg); font-style: normal; transition: rotate var(--duration-base) var(--ease-brand); }
-  .e-pkg-go:hover i, .e-pkg-go:focus-visible i { rotate: 45deg; }
-  .e-pkg-go:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-  .e-pkg-go:active { scale: .97; }
-  .e-pkg.is-acc { background: var(--orange); color: #fff; }
-  .e-pkg.is-acc :is(.e-pkg-n, .e-pkg-tag, .e-pkg-meta) { color: oklch(1 0 0 / .8); }
-  .e-pkg.is-acc .e-pkg-list { border-color: oklch(1 0 0 / .25); }
-  .e-pkg.is-acc .e-pkg-list li::before { background: #fff; color: oklch(.45 .2 262); }
-  .e-pkg.is-acc .e-pkg-go { background: #fff; color: oklch(.3 .15 262); }
-  .e-pkg.is-acc .e-badge { background: #fff; color: oklch(.45 .2 262); }
-  .e-pkg.is-acc .e-pkg-go i { background: oklch(.45 .2 262); color: #fff; }
-  @media (min-width: 1024px) {
-    .e-pkgs { grid-template-columns: repeat(3, 1fr); align-items: end; }
-    .e-pkg:nth-child(1) { min-height: 520px; }
-    .e-pkg:nth-child(2) { min-height: 580px; }
-    .e-pkg:nth-child(3) { min-height: 640px; }
+  /* Home only: What we do fills at least one screen (the merged CTA + footer in Footer.astro sets its own height).
+     min-height, not height, so taller content (an open row on a phone) is never cut off. */
+  .e-wd { min-height: 100vh; min-height: 100svh; }
+  .e-wd { display: flex; flex-direction: column; justify-content: center; }
+  .e-wd > .wrap { width: 100%; }
+
+  /* 4b. What we do */
+  .e-wd-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); }
+  .e-wd-side { display: grid; align-content: start; gap: clamp(20px, 3vw, 40px); }
+  .e-wd-t { justify-self: start; margin: 0; font-size: var(--text-base); letter-spacing: -0.01em; }
+  .e-wd-frame { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-card); overflow: hidden; background: var(--color-surface); }
+  .e-wd-frame :global(.e-wd-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity var(--duration-slow) var(--ease-brand); }
+  .e-wd:has(.acc-item:nth-child(1).open) :global(.e-wd-img:nth-child(1)),
+  .e-wd:has(.acc-item:nth-child(2).open) :global(.e-wd-img:nth-child(2)),
+  .e-wd:has(.acc-item:nth-child(3).open) :global(.e-wd-img:nth-child(3)),
+  .e-wd:has(.acc-item:nth-child(4).open) :global(.e-wd-img:nth-child(4)) { opacity: 1; }
+  .e-wd:not(:has(.acc-item.open)) :global(.e-wd-img:nth-child(1)) { opacity: 1; }
+  .e-wd-list { border-top: 0; }
+  .e-wd-list .acc-item { border-bottom-color: color-mix(in srgb, var(--color-border) 50%, transparent); }
+  .e-wd-list .acc-item:last-child { border-bottom: 0; }
+  .e-wd-list .acc-btn { grid-template-columns: minmax(0, 1fr) auto; padding: clamp(14px, 1.6vw, 22px) 0; }
+  .e-wd-name { font-size: var(--text-xl); line-height: 1; letter-spacing: -0.04em; font-weight: 600; padding-bottom: .08em; transition: color var(--duration-fast); }
+  .e-wd-list .acc-btn:hover .e-wd-name, .e-wd-list .acc-item.open .e-wd-name { color: var(--color-accent); }
+  .e-wd-list .arr { width: 36px; height: 36px; font-size: 1.2rem; line-height: 1; }
+  .e-wd-list .acc-item.open .arr { transform: rotate(45deg); }
+  .e-wd-body { padding: 0 0 clamp(24px, 2.6vw, 36px); }
+  .e-wd-body p { max-width: 40ch; margin: 0; font-size: var(--text-base); line-height: 1.5; color: var(--color-muted); }
+  /* Mobile: no side image; each open row shows its own image under the text. */
+  .e-wd-pic { margin-top: 24px; aspect-ratio: 4 / 3; border-radius: var(--radius-card); overflow: hidden; background: var(--color-surface); }
+  .e-wd-pic :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 1023px) {
+    .e-wd-frame { display: none; }
+    .e-wd-name { font-size: var(--text-4xl); }
   }
-  .e-fine { margin-top: 16px; }
+  @media (min-width: 1024px) {
+    .e-wd-pic { display: none; }
+    .e-wd-t { justify-self: end; text-align: right; }
+    /* Both columns share one height: the image fills whatever the list leaves below the heading. */
+    .e-wd-in { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(40px, 6vw, 120px); align-items: stretch; }
+    .e-wd-side { order: 2; display: flex; flex-direction: column; }
+    .e-wd-frame { flex: 1 1 auto; aspect-ratio: auto; min-height: 240px; }
+  }
 
 </style>

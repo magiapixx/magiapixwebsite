@@ -18,11 +18,11 @@ const isActive = (href: string) => {
       <p><Button href={SITE.emailHref} label="Contact us" magnetic variant="solid" /></p>
     </div>
     <nav class="menu-list" aria-label="Main">
-      {SITE.nav.map((n, i) => {
+      {SITE.nav.map((n) => {
         const active = isActive(n.href);
         return (
           <a href={n.href} class:list={{ 'is-active': active }} aria-current={active ? 'page' : undefined}>
-            <span class="arr">→</span>{n.label}<sup>0{i + 1}</sup>
+            <span class="arr">→</span>{n.label}
           </a>
         );
       })}

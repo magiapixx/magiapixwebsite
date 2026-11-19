@@ -10,6 +10,7 @@ role: "Digital experience, 3D visual direction"
 result: "Exhibition views up 4.1×"
 cover: "../../assets/images/p-ocean-tranquility.jpg"
 coverAlt: "Pastel geometric sailboats reflected in turquoise water beneath coral clouds."
+coverVideo: "/media/earth.mp4"
 challenge: "Capturing the calm stillness of faceted ocean geometry and sunlit pastel reflections inside an interactive digital showcase."
 approach: "Built a luminous low-poly visual system pairing turquoise water facets, gentle horizon motion, and serene spatial typography."
 metrics:

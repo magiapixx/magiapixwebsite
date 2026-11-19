@@ -60,6 +60,8 @@ export function initEffects() {
   });
   $$('.page-head [data-intro]').forEach((el) => introTweens.push(gsap.from(el, { y: 30, opacity: 0, duration: MOTION.base * 1.4, ease: MOTION.ease, delay: 0.25, paused: true })));
   $$('[data-reveal]').forEach((el) => gsap.from(el, { y: 40, opacity: 0, duration: MOTION.base * 1.4, ease: MOTION.ease, scrollTrigger: { trigger: el, start: 'top 92%' } }));
+  // Same reveal as [data-reveal], but each child gets its own trigger (long article bodies).
+  $$('[data-reveal-each]').forEach((el) => Array.from(el.children).forEach((c) => gsap.from(c, { y: 40, opacity: 0, duration: MOTION.base * 1.4, ease: MOTION.ease, scrollTrigger: { trigger: c, start: 'top 92%' } })));
   $$('[data-stagger]').forEach((el) => gsap.from(el.children, { y: 48, opacity: 0, duration: MOTION.base * 1.4, ease: MOTION.ease, stagger: 0.07, scrollTrigger: { trigger: el, start: 'top 85%' } }));
   $$('[data-clip]').forEach((el) => { const img = $('img', el);
     const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 88%' } })

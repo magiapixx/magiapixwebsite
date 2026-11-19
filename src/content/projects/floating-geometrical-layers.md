@@ -10,6 +10,7 @@ role: "Interactive art, 3D web experience"
 result: "Visitor dwell time up 3.8×"
 cover: "../../assets/images/floating-geometric-showcase.png"
 coverAlt: "Minimalist translucent cyan and blue geometric squares floating in layered perspective"
+coverVideo: "/media/floating-layers.mp4"
 challenge: "Capturing the interplay of depth, transparency, and delicate shadow in clean architectural 3D layers."
 approach: "Engineered a tranquil multi-plane composition celebrating glassmorphism, geometric precision, and soothing blue gradients."
 metrics:

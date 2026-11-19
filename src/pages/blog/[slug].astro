@@ -23,7 +23,7 @@ const date = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric'
     </div>
     <div class="post-img" data-clip><Image src={d.cover} alt={d.coverAlt} widths={[800, 1600]} sizes="100vw" loading="eager" /></div>
   </div></section>
-  <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap"><article class="prose"><Content /></article></div></section>
+  <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap"><article class="prose" data-reveal-each><Content /></article></div></section>
   <section class="sec" data-mood="paper"><div class="wrap">
     <SectionHead title="Related articles." />
     <div class="cards3">{related.map((p) => <ArticleCard post={p} />)}</div>

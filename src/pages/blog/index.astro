@@ -14,7 +14,7 @@ const fdate = f.data.date.toLocaleDateString('en-US', { month: 'short', day: 'nu
   </div></section>
   <section class="sec" data-mood="night" style="padding-top:0"><div class="wrap">
     <a class="feat" href={`/blog/${f.id}/`} data-cursor="Read"><div class="img" data-clip><Image src={f.data.cover} alt={f.data.coverAlt} widths={[800, 1400]} sizes="(min-width: 1024px) 58vw, 92vw" loading="eager" /></div>
-      <div><div class="type-small muted" style="display:flex;gap:12px;align-items:center"><span class="chip chip-sm">{f.data.tag}</span>{fdate} · {f.data.readingTime}</div><h2 class="type-h2" style="margin-top:16px">{f.data.title}</h2><p class="muted" style="margin-top:16px;max-width:46ch">{f.data.description}</p></div></a>
+      <div data-reveal><div class="type-small muted" style="display:flex;gap:12px;align-items:center"><span class="chip chip-sm">{f.data.tag}</span>{fdate} · {f.data.readingTime}</div><h2 class="type-h2" style="margin-top:16px">{f.data.title}</h2><p class="muted" style="margin-top:16px;max-width:46ch">{f.data.description}</p></div></a>
     <div class="cards3" id="blist">{rest.map((p) => <ArticleCard post={p} />)}</div>
   </div></section>
 </BaseLayout>

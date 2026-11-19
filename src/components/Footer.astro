@@ -1,4 +1,5 @@
 ---
+import Button from './ui/Button.astro';
 import { SITE } from '../data/site';
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 const isActive = (href: string) => {
@@ -6,42 +7,139 @@ const isActive = (href: string) => {
   if (target === '/') return pathname === '/';
   return pathname === target || pathname.startsWith(target + '/');
 };
+// The home page animates the heading word by word in its own script; elsewhere it uses the shared line reveal.
+const isHome = Astro.url.pathname === '/';
+const year = new Date().getFullYear();
 ---
-<footer class="site-footer" data-mood="paper">
-  <div class="fgrid">
-    <div class="fcell" data-reveal>
-      <a class="flink type-h3" href={SITE.emailHref}>{SITE.email}</a>
-      <a class="flink" href={SITE.emailHref}>Contact us <span class="fa" aria-hidden="true">↗</span></a>
+<!-- CTA dan footer digabung jadi satu layar biru: ajakan kontak di tengah, wordmark MAGIAPIX raksasa
+     sedikit blur di bawahnya, baris kecil (hak cipta, menu, back to top) paling bawah. -->
+<footer class="site-footer fx" data-mood="night" aria-labelledby="fx-t">
+  <div class="fx-main">
+    <h2 class="e-cta-t fx-t" id="fx-t" data-split={isHome ? undefined : ''}>Let's build something great together.</h2>
+    <p class="fx-sub" data-reveal>Get in touch to explore how we can help your business reach its full potential.</p>
+    <div class="fx-acts" data-reveal>
+      <Button href={SITE.emailHref} label="Contact us" variant="solid" magnetic />
+      <Button href={`${SITE.emailHref}?subject=${encodeURIComponent('Request a quote')}`} label="Request a quote" />
     </div>
   </div>
-  <div class="flegal type-small muted">
-    <nav class="flegal-links" aria-label="Footer">
-      <p class="frow">
+
+  <!-- Wordmark di jalurnya sendiri (bukan di belakang headline) supaya lebih terlihat tanpa bertabrakan dengan teks -->
+  <div class="fx-wm" aria-hidden="true"><p>{'magiapix'.split('').map((c) => <span>{c}</span>)}</p></div>
+
+  <div class="fx-bar type-small">
+    <p class="fx-copy">© {year} Magiapix</p>
+    <nav class="fx-nav" aria-label="Footer">
+      <ul>
         {SITE.nav.map((n) => {
           const active = isActive(n.href);
           return (
-            <a class:list={['flink', active ? 'is-active' : 'muted']} href={n.href} aria-current={active ? 'page' : undefined}>{n.label}</a>
+            <li><a class:list={['flink', { 'is-active': active }]} href={n.href} aria-current={active ? 'page' : undefined}>{n.label}</a></li>
           );
         })}
-      </p>
+      </ul>
     </nav>
     <a class="totop" href="#main">Back to top <span class="a" aria-hidden="true">↑</span></a>
   </div>
-  <div class="wm" data-wordmark-rise aria-hidden="true"><p>{'magiapix'.split('').map((c, i) => <span class:list={{ 'wm-accent': i >= 5 }}>{c}</span>)}</p></div>
 </footer>
 
+<script>
+  import { suppressGlides } from '../scripts/glide';
+
+  // Tombol email melayang menutupi "Back to top" dan mengulang tombol email di sini: sembunyikan saat footer terlihat.
+  const fx = document.querySelector<HTMLElement>('.fx');
+  const fab = document.querySelector<HTMLElement>('.email-contact');
+  if (fx && fab) {
+    new IntersectionObserver(([e]) => fab.classList.toggle('is-off', e.isIntersecting), { threshold: 0.15 }).observe(fx);
+  }
+
+  // "Back to top" melintasi semua section; jangan disela luncuran sekali-scroll di beranda.
+  fx?.querySelector('.totop')?.addEventListener('click', () => suppressGlides(3000));
+</script>
+
 <style>
-  .wm span:not(.wm-accent) { color: color-mix(in oklch, var(--color-fg) 20%, transparent); }
-  .wm .wm-accent { color: var(--color-accent); }
-  .flegal-links .is-active { color: var(--color-fg); }
-  @media (max-width: 1023px) {
-    .flegal { justify-content: space-between; column-gap: 16px; }
-    .flegal-links { margin-left: auto; }
-    .flegal-links .frow { column-gap: 16px; }
-    .totop {
-      order: -1;
-      position: static;
-      transform: none;
-    }
+  :global(.email-contact) { transition: opacity var(--duration-base) var(--ease-brand), transform var(--duration-base) var(--ease-brand); }
+  :global(.email-contact.is-off) { opacity: 0; transform: translateY(12px); pointer-events: none; }
+  .fx {
+    --blue: oklch(.52 .22 262);
+    --blue-d: oklch(.48 .21 262);
+    /* Footer "di belakang" halaman: menempel di dasar layar satu lapis di bawah <main> (main z-index 1,
+       footer 0), jadi section terakhir tergulung naik dan menyingkap footer di bawahnya. */
+    position: sticky;
+    bottom: 0;
+    z-index: 0;
+    isolation: isolate;
+    overflow: hidden;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    /* Tepat satu layar di semua perangkat; ukuran isi di bawah ikut lebar DAN tinggi layar (min()) supaya muat. */
+    height: 100vh;
+    height: 100svh;
+    background: var(--blue);
+    color: #fff;
+  }
+
+  /* Wordmark raksasa selebar layar di antara ajakan dan baris bawah: putih transparan, sedikit blur */
+  .fx-wm { flex: none; pointer-events: none; padding-bottom: clamp(0.5rem, 2svh, 2rem); }
+  .fx-wm p {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-inline: 1cqw;
+    /* Selebar layar seperti sebelumnya; ruang yang tersisa diambil dari area ajakan di atasnya */
+    font-size: calc(100cqw / 5.2);
+    line-height: .8;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: uppercase;
+    color: oklch(1 0 0 / .2);
+    filter: blur(clamp(0.2rem, 0.5cqw, 0.6rem));
+  }
+
+  .fx-main {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: clamp(0.5rem, 2svh, 1.5rem);
+    padding: clamp(3.5rem, 10svh, 8rem) var(--gutter) clamp(1rem, 3svh, 3rem);
+    text-align: center;
+  }
+  .fx-t { font-size: min(var(--text-display), 9svh); line-height: 1; letter-spacing: -0.045em; font-weight: 600; max-width: 16ch; }
+  .fx-sub { max-width: 46ch; font-size: var(--text-sm); opacity: .9; }
+  .fx-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: clamp(0rem, 1svh, .5rem); }
+  .fx-acts :global(.btn) { min-height: 44px; padding-inline: 1.25rem; }
+  .fx-acts :global(.btn-solid) { background: #fff; color: var(--blue-d); border-color: #fff; }
+  .fx-acts :global(.btn::before) { background: oklch(.2 .08 262); }
+  .fx-acts :global(.btn:hover), .fx-acts :global(.btn:focus-visible) { color: #fff; border-color: oklch(.2 .08 262); }
+
+  /* Baris bawah: hak cipta kiri, menu (dipisah garis tegak) tengah, back to top kanan */
+  .fx-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: .75rem 1.5rem;
+    flex: none;
+    padding: 0 var(--gutter) clamp(0.75rem, 2svh, 1.5rem);
+  }
+  .fx-copy { opacity: .85; }
+  .fx-nav ul { display: flex; flex-wrap: wrap; justify-content: center; list-style: none; margin: 0; padding: 0; }
+  .fx-nav li + li::before { content: "|"; margin-inline: .75rem; opacity: .5; }
+  .fx-nav a { color: #fff; opacity: .85; }
+  .fx-nav a.is-active, .fx-nav a:hover { opacity: 1; color: #fff; }
+  .fx .totop { justify-self: end; color: #fff; }
+
+  /* Layar sangat pendek (HP landscape): kalimat pendukung disembunyikan supaya ajakan dan tombol tetap muat */
+  @media (max-height: 520px) {
+    .fx-sub { display: none; }
+    /* Wordmark selebar layar terlalu tinggi di sini; dibatasi 22% tinggi layar dan diletakkan di tengah */
+    .fx-wm p { width: fit-content; margin-inline: auto; gap: 0 1cqw; font-size: min(calc(100cqw / 5.2), 22svh); }
+  }
+
+  @media (max-width: 767px) {
+    .fx-bar { grid-template-columns: 1fr auto; }
+    .fx-nav { grid-column: 1 / -1; order: -1; }
+    .fx-nav ul { justify-content: flex-start; }
   }
 </style>

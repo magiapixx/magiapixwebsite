@@ -15,6 +15,7 @@ const projects = defineCollection({
     result: z.string(),
     cover: image(),
     coverAlt: z.string(),
+    coverVideo: z.string().optional(),
     challenge: z.string(),
     approach: z.string(),
     metrics: z.array(z.object({ value: z.string(), label: z.string() })).length(3),
