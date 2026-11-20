@@ -71,15 +71,28 @@ export function runLoader(after: () => void) {
     const reveal = () => { after(); window.dispatchEvent(new Event('bb:loaded')); };
     const release = () => { root.classList.remove('is-loading'); lockScroll(false); getLenis()?.start(); };
     if (!motionOn()) { release(); reveal(); return; }
-    gsap.timeline({ delay: 0.25 })
-      .to($$('.loader-top, .loader-num', el), { y: -24, opacity: 0, duration: 0.45, ease: 'power2.inOut', stagger: 0.06 })
-      .to(el, { yPercent: -100, duration: MOTION.slow * 0.9, ease: 'power3.inOut', onStart: () => { gsap.delayedCall(0.35, reveal); } }, '-=0.1')
-      .add(() => { release(); gsap.set([el, ...$$('.loader-top, .loader-num', el)], { clearProps: 'all' }); });
+    // Animasi hilang: teks naik dan memudar, garis progres memudar, lalu panel terangkat seperti tirai dengan
+    // tepi bawah melengkung (membesar di awal, merata lagi di akhir). Animasi muncul CSS dimatikan dulu karena
+    // fill-nya akan menimpa nilai yang dianimasikan GSAP.
+    const texts = $$('.loader-mark, .loader-note, .loader-num', el);
+    const curve = $('.loader-curve', el);
+    const lift = MOTION.slow * 1.05;
+    gsap.set([...texts, $('.loader-bar', el)], { animation: 'none' });
+    gsap.timeline({ delay: 0.3 })
+      .to(texts, { y: -40, opacity: 0, duration: 0.55, ease: 'power3.in', stagger: 0.07 })
+      .to($('.loader-bar', el), { opacity: 0, duration: 0.3, ease: 'none' }, '<0.1')
+      .addLabel('lift', '-=0.1')
+      .to(el, { y: () => -(innerHeight + (curve?.offsetHeight ?? 0)), duration: lift, ease: 'power3.inOut', onStart: () => { gsap.delayedCall(0.4, reveal); } }, 'lift')
+      .fromTo(curve, { scaleY: 0 }, { scaleY: 1, duration: lift * 0.45, ease: 'power2.out' }, 'lift')
+      .to(curve, { scaleY: 0, duration: lift * 0.55, ease: 'power2.in' }, `lift+=${lift * 0.45}`)
+      .add(() => { release(); gsap.set([el, curve, $('.loader-bar', el), ...texts].filter(Boolean), { clearProps: 'all' }); });
   };
 
-  // Angka mengejar progres sebenarnya; 100 hanya tercapai setelah semua tugas selesai.
+  // Angka mengejar progres sebenarnya; 100 hanya tercapai setelah semua tugas selesai. Loader tampil minimal
+  // 1,6 detik supaya animasi muncul (CSS) selesai dulu sebelum animasi hilang dimulai.
+  const t0 = performance.now();
   const tick = () => {
-    const all = doneCount === jobs.length;
+    const all = doneCount === jobs.length && (!motionOn() || performance.now() - t0 > 1600);
     const cap = all ? 100 : Math.min((doneCount / jobs.length) * 100, 99);
     shown += (cap - shown) * 0.12;
     if (cap - shown < 0.4) shown = cap;

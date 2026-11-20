@@ -905,8 +905,9 @@ const disciplines = [
     const bar = document.querySelector<HTMLElement>('.site-header .wrap');
     const text = [...document.querySelectorAll<HTMLElement>('.e-hero-meta > *, .e-hero-lead > *')];
     if (!img || window.scrollY > 5) { html.classList.remove('hero-intro'); return; }
-    // Loader awal masih menutup halaman: mulai intro saat loader bergeser keluar (loader.ts mengirim bb:loaded).
-    if (html.classList.contains('is-loading')) {
+    // Loader awal atau panel transisi halaman masih menutup layar: mulai intro saat panel bergeser keluar
+    // (loader.ts dan page-transition.ts mengirim bb:loaded).
+    if (html.classList.contains('is-loading') || html.classList.contains('pt-cover')) {
       await new Promise<void>((done) => addEventListener('bb:loaded', () => done(), { once: true }));
     }
     // Tunggu sampai video siap diputar (maks. 1 detik) dan satu frame setelah inisialisasi halaman, supaya awal

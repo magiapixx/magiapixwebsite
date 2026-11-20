@@ -22,11 +22,26 @@ export function initPageTransition() {
   addEventListener('pageshow', (e) => { if (e.persisted) { gsap.set(pt, { yPercent: 100 }); pt.style.visibility = ''; document.documentElement.classList.remove('pt-cover'); } });
 }
 
+// Tunggu halaman tujuan selesai dimuat (maks. 2,5 detik) plus dua frame. Panel diangkat oleh GSAP di main thread;
+// bila diangkat sambil halaman masih menyiapkan diri (ScrollTrigger.refresh saat load, inisialisasi beranda,
+// decoding video) gerakannya tersendat. Selama menunggu, panel tetap menutup layar dengan nama halaman.
+const settled = () => new Promise<void>((done) => {
+  const go = () => requestAnimationFrame(() => requestAnimationFrame(() => done()));
+  if (document.readyState === 'complete') { go(); return; }
+  const t = setTimeout(go, 2500);
+  addEventListener('load', () => { clearTimeout(t); setTimeout(go, 60); }, { once: true });
+});
+
 export function pageIn(after: () => void) {
   const pt = $('.pt')!, txt = $('.pt span')!, name = store.get('bb-pt'); store.del('bb-pt');
-  if (!name) { after(); return; }
-  txt.textContent = name; gsap.set(pt, { yPercent: 0 }); pt.style.visibility = 'visible'; document.documentElement.classList.remove('pt-cover');
-  gsap.to(pt, { yPercent: -100, duration: MOTION.slow * 0.8, ease: MOTION.c2, delay: 0.15, onComplete: () => { gsap.set(pt, { yPercent: 100 }); pt.style.visibility = ''; } });
-  gsap.delayedCall(0.35, after);
+  const root = document.documentElement;
+  if (!name) { root.classList.remove('pt-cover'); after(); return; }
+  txt.textContent = name; gsap.set(pt, { yPercent: 0 }); pt.style.visibility = 'visible';
+  settled().then(() => {
+    root.classList.remove('pt-cover');
+    gsap.to(pt, { yPercent: -100, duration: MOTION.slow * 0.8, ease: MOTION.c2, onComplete: () => { gsap.set(pt, { yPercent: 100 }); pt.style.visibility = ''; } });
+    // Animasi masuk halaman (mis. intro hero beranda) mulai saat panel mulai terangkat.
+    gsap.delayedCall(0.2, () => { after(); window.dispatchEvent(new Event('bb:loaded')); });
+  });
   const h1 = $('h1'); if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
 }

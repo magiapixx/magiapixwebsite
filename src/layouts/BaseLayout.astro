@@ -53,10 +53,12 @@ const { title, description, image, type, loader = true, noindex = false } = Astr
       <div class="loader" role="status" aria-live="polite" aria-label="Loading website">
         <div class="loader-top">
           <b class="loader-mark">magia<span>pix</span></b>
-          <p class="loader-note">Website ongoing development. Low connection speed might load the web longer, make sure your connection is fast. Please wait.</p>
+          <p class="loader-note">The website is currently under development. Slow connection speeds may make the website load longer. Please ensure your connection is fast. Please wait.</p>
         </div>
         <p class="loader-num" aria-hidden="true"><span class="ctr">0</span>%</p>
         <div class="loader-bar" aria-hidden="true"><i></i></div>
+        <!-- Tepi bawah melengkung yang ikut panel saat terangkat keluar (loader.ts) -->
+        <div class="loader-curve" aria-hidden="true"></div>
       </div>
     )}
     <div class="pt" aria-hidden="true"><span></span></div>

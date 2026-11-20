@@ -181,11 +181,20 @@ html.is-loading .loader{display:flex}
 .loader-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:1.25rem 2rem}
 .loader-mark{font-size:var(--text-lg);font-weight:700;letter-spacing:-.03em}
 .loader-mark span{color:var(--orange)}
-.loader-note{max-width:34ch;font-size:var(--text-sm);line-height:1.45;color:var(--color-muted)}
+.loader-note{max-width:40ch;font-size:var(--text-sm);line-height:1.45;color:var(--color-muted)}
 .loader-num{margin:auto 0 clamp(.75rem,2svh,1.5rem);font-size:clamp(4.5rem,18vw,15rem);line-height:.85;font-weight:600;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
 .loader-bar{height:3px;margin-inline:calc(var(--gutter) * -1);background:oklch(.92 .006 70)}
 .loader-bar i{display:block;height:100%;width:100%;background:var(--orange);transform:scaleX(0);transform-origin:left center}
 @media (max-width:640px){.loader-note{max-width:none}}
+/* Tepi bawah melengkung: menempel di bawah panel, membesar lalu mengecil saat panel terangkat (loader.ts) */
+.loader-curve{position:absolute;left:-10%;right:-10%;top:calc(100% - 1px);height:clamp(80px,16vh,180px);background:inherit;border-radius:0 0 50% 50%;transform:scaleY(0);transform-origin:top center;pointer-events:none}
+/* Animasi muncul memakai CSS (bukan JS) supaya sudah berjalan sejak paint pertama, sebelum skrip dimuat */
+@keyframes loader-rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes loader-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+html.is-loading:not(.no-motion) .loader-mark{animation:loader-rise .8s cubic-bezier(.16,1,.3,1) .1s both}
+html.is-loading:not(.no-motion) .loader-note{animation:loader-rise .8s cubic-bezier(.16,1,.3,1) .22s both}
+html.is-loading:not(.no-motion) .loader-num{animation:loader-rise 1s cubic-bezier(.16,1,.3,1) .34s both}
+html.is-loading:not(.no-motion) .loader-bar{transform-origin:left center;animation:loader-grow 1s cubic-bezier(.65,0,.35,1) .2s both}
 
 /* Kursor */
 /* will-change + contain: titik kursor dipindah compositor di layer sendiri; tanpa ini posisi lamanya kadang tidak di-repaint dan meninggalkan jejak garis putus-putus di halaman */
