@@ -40,8 +40,10 @@ export function pageIn(after: () => void) {
   settled().then(() => {
     root.classList.remove('pt-cover');
     gsap.to(pt, { yPercent: -100, duration: MOTION.slow * 0.8, ease: MOTION.c2, onComplete: () => { gsap.set(pt, { yPercent: 100 }); pt.style.visibility = ''; } });
-    // Animasi masuk halaman (mis. intro hero beranda) mulai saat panel mulai terangkat.
-    gsap.delayedCall(0.2, () => { after(); window.dispatchEvent(new Event('bb:loaded')); });
+    // Animasi masuk halaman mulai saat panel mulai terangkat. Intro hero beranda (bb:loaded) baru mulai setelah
+    // panel lewat setengah jalan, supaya pekerjaan intro tidak berebut frame dengan panel yang sedang terangkat.
+    gsap.delayedCall(0.2, after);
+    gsap.delayedCall(MOTION.slow * 0.45, () => window.dispatchEvent(new Event('bb:loaded')));
   });
   const h1 = $('h1'); if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
 }

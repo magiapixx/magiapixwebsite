@@ -62,6 +62,11 @@ const { title, description, image, type, loader = true, noindex = false } = Astr
       </div>
     )}
     <div class="pt" aria-hidden="true"><span></span></div>
+    <!-- Panel transisi: isi nama halaman tujuan sejak paint pertama. Tanpa ini panel tampil kosong ~0,3 detik
+         sampai skrip utama dimuat, lalu teksnya muncul lagi (terlihat berkedip). -->
+    <script is:inline>
+      try { var n = sessionStorage.getItem('bb-pt'); if (n) document.querySelector('.pt span').textContent = n; } catch (e) {}
+    </script>
     <Header />
     <Menu />
     <main id="main"><slot /></main>

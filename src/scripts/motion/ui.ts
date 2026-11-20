@@ -56,10 +56,15 @@ export function initAccordions() {
       };
       gsap.ticker.add(keep);
       gsap.delayedCall(MOTION.base + 0.05, () => gsap.ticker.remove(keep));
-      $$('.acc-item.open', it.parentElement!).forEach((o) => { if (o === it) return; o.classList.remove('open'); $('.acc-btn', o)!.setAttribute('aria-expanded', 'false');
-        if (motionOn()) gsap.fromTo($('.acc-panel', o), { height: $('.acc-panel', o)!.offsetHeight }, { height: 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height' }); });
+      // Tinggi panel lain diukur SEBELUM kelas open dilepas; sesudahnya CSS sudah membuatnya 0, panel kolaps seketika
+      // dan halaman melompat (mis. 674px dalam satu frame) alih-alih menutup halus.
+      $$('.acc-item.open', it.parentElement!).forEach((o) => { if (o === it) return;
+        const p = $('.acc-panel', o)!, h = p.offsetHeight;
+        o.classList.remove('open'); $('.acc-btn', o)!.setAttribute('aria-expanded', 'false');
+        if (motionOn()) gsap.fromTo(p, { height: h }, { height: 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height' }); });
+      const h0 = panel.offsetHeight; // diukur sebelum kelas berubah (lihat catatan di atas)
       it.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
-      if (motionOn()) gsap.fromTo(panel, { height: open ? 0 : panel.offsetHeight }, { height: open ? 'auto' : 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height', onComplete: () => ScrollTrigger.refresh() });
+      if (motionOn()) gsap.fromTo(panel, { height: open ? 0 : h0 }, { height: open ? 'auto' : 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height', onComplete: () => ScrollTrigger.refresh() });
     });
   });
   // Akordeon hover (data-hover): di perangkat ber-mouse, item terbuka saat kursor masuk dan
@@ -69,8 +74,8 @@ export function initAccordions() {
     let t = 0;
     const set = (target: HTMLElement | null) => $$('.acc-item', list).forEach((it) => {
       const want = it === target, open = it.classList.contains('open'); if (want === open) return;
-      const panel = $('.acc-panel', it)!; it.classList.toggle('open', want); $('.acc-btn', it)!.setAttribute('aria-expanded', String(want));
-      if (motionOn()) gsap.fromTo(panel, { height: want ? 0 : panel.offsetHeight }, { height: want ? 'auto' : 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height', overwrite: true, onComplete: () => ScrollTrigger.refresh() });
+      const panel = $('.acc-panel', it)!, h0 = panel.offsetHeight; it.classList.toggle('open', want); $('.acc-btn', it)!.setAttribute('aria-expanded', String(want));
+      if (motionOn()) gsap.fromTo(panel, { height: want ? 0 : h0 }, { height: want ? 'auto' : 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height', overwrite: true, onComplete: () => ScrollTrigger.refresh() });
     });
     set(null);
     $$('.acc-item', list).forEach((it) => it.addEventListener('pointerenter', () => { clearTimeout(t); t = window.setTimeout(() => set(it), 90); }));
