@@ -218,7 +218,10 @@ const disciplines = [
 
     const getGutter = () => parseFloat(getComputedStyle(heroTop).paddingLeft) || 16;
     const getInitImgTop = () => heroTop.offsetHeight;
-    const getInitImgHeight = () => Math.min(720, Math.max(320, innerHeight * 0.58));
+    // HP: video memanjang ke bawah sampai ruang kosong di bawahnya sama dengan jarak sisi kiri/kanan (gutter).
+    const getInitImgHeight = () => (innerWidth < 768
+      ? Math.max(320, hero.clientHeight - getInitImgTop() - getGutter())
+      : Math.min(720, Math.max(320, innerHeight * 0.58)));
     const getInitRadius = () => Math.min(32, Math.max(20, innerWidth * 0.022));
     const getTargetTop = () => (innerWidth >= 768 ? 28 : 20);
     const isDesktop = () => innerWidth >= 1024;
@@ -929,7 +932,12 @@ const disciplines = [
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     gsap.set(img, { willChange: 'transform' });
     const tl = gsap.timeline();
-    tl.fromTo(img, { scale: 0.4, transformOrigin: '50% 50%' }, { scale: 1, duration: 1.6, ease: 'power3.inOut' }, 0);
+    // Kotak video muncul dari tepi bawah layar lalu membesar ke atas, kanan dan kiri sekaligus: titik tumpu di
+    // tengah bawah, dan awalnya digeser turun sampai tepi bawahnya menempel di dasar layar.
+    const fromBottom = Math.max(0, innerHeight - img.getBoundingClientRect().bottom);
+    tl.fromTo(img,
+      { scale: 0.9, y: fromBottom, transformOrigin: '50% 100%', autoAlpha: 1 },
+      { scale: 1, y: 0, duration: 1.6, ease: 'power3.inOut' }, 0);
     if (bar) tl.fromTo(bar, { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 1.1);
     if (text.length) tl.fromTo(text, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, 1.15);
     // Nilai awal sudah dipasang inline oleh fromTo, jadi kelas penyembunyi CSS bisa dilepas.
@@ -939,7 +947,7 @@ const disciplines = [
     const evs = ['wheel', 'touchstart', 'keydown'] as const;
     const off = () => evs.forEach((ev) => removeEventListener(ev, finish));
     evs.forEach((ev) => addEventListener(ev, finish, { passive: true }));
-    tl.eventCallback('onComplete', () => { off(); gsap.set(img, { clearProps: 'transform,transformOrigin,willChange' }); gsap.set([bar, ...text].filter(Boolean), { clearProps: 'opacity,visibility,transform' }); });
+    tl.eventCallback('onComplete', () => { off(); gsap.set(img, { clearProps: 'transform,transformOrigin,willChange,opacity,visibility' }); gsap.set([bar, ...text].filter(Boolean), { clearProps: 'opacity,visibility,transform' }); });
   };
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); outro(); ScrollTrigger.refresh(); }));
 </script>
@@ -971,7 +979,8 @@ const disciplines = [
   /* 1. Hero */
   .e-hero { position: relative; overflow: clip; }
   /* Keadaan awal animasi muncul (kelas dipasang di <head> oleh BaseLayout, dilepas oleh heroAppear) */
-  :global(html.hero-intro) .e-hero-img { transform: scale(0.4); }
+  /* Kotak video disembunyikan sampai intro mulai; posisi awalnya (menempel di dasar layar) dihitung oleh heroAppear */
+  :global(html.hero-intro) .e-hero-img { visibility: hidden; }
   :global(html.hero-intro .site-header .wrap), :global(html.hero-intro) .e-hero-meta > *, :global(html.hero-intro) .e-hero-lead > * { opacity: 0; }
   :global(html.js-anim) .e-hero { height: 100svh; overflow: hidden; }
   .e-hero-top { position: relative; z-index: 3; display: grid; gap: 32px; padding-top: 120px; padding-bottom: clamp(24px, 3vw, 40px); }
@@ -987,9 +996,13 @@ const disciplines = [
     .e-hero-meta { order: 2; }
   }
   @media (max-width: 767px) {
-    .e-hero-top { padding-top: 96px; padding-bottom: 20px; gap: 18px; }
-    .e-hero-meta { gap: 12px; }
-    .e-faces img { width: 34px; height: 34px; }
+    /* Jarak teks ke video dilebarkan; video ikut turun dan memakai sebagian ruang kosong di bawahnya */
+    .e-hero-top { padding-top: 96px; padding-bottom: clamp(36px, 7svh, 72px); gap: 18px; }
+    /* Baris meta (lokasi, foto tim, jumlah orang) 25% lebih kecil dan sedikit lebih jauh dari judul.
+       Ukuran diatur lewat font/foto, bukan transform: transform-nya dipakai animasi scroll hero. */
+    .e-hero-meta { gap: 9px; margin-top: 14px; }
+    .e-hero-meta .type-small { font-size: max(11px, calc(var(--text-sm) * 0.75)); line-height: 1.45; }
+    .e-faces img { width: 26px; height: 26px; margin-left: -8px; }
     .e-mini { display: none; }
   }
   @media (min-width: 1024px) {
