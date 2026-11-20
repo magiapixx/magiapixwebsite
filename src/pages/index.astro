@@ -1047,6 +1047,14 @@ const disciplines = [
   .e-wk-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .e-wk-tags li { padding: 7px 14px; border-radius: 999px; border: 1px solid oklch(1 0 0 / .55); background: oklch(1 0 0 / .14); backdrop-filter: blur(8px); font-size: var(--text-xs); }
   .e-wk-tags .is-res { background: var(--orange); border-color: var(--orange); font-weight: 600; }
+  /* HP: tag tahun selalu turun ke baris kedua supaya tidak tertutup tombol email melayang di kanan bawah.
+     Pemisah baris tak terlihat (lebar 100%, tinggi 0) disisipkan sebelum tag ketiga. Pemisah itu menambah satu baris
+     kosong, jadi row-gap dibagi dua (2 x 4px) agar jarak antarbaris tetap 8px. */
+  @media (max-width: 767px) {
+    .e-wk-tags { row-gap: 4px; }
+    .e-wk-tags::before { content: ''; flex-basis: 100%; height: 0; order: 2; }
+    .e-wk-tags li:nth-child(3) { order: 3; }
+  }
 
 
   /* Home only: What we do fills at least one screen (the merged CTA + footer in Footer.astro sets its own height).
