@@ -174,11 +174,18 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .pt{position:fixed;inset:0;z-index:90;visibility:hidden;background:var(--orange);color:oklch(.99 0 0);display:grid;place-items:center;pointer-events:none}
 html.pt-cover .pt{visibility:visible}
 .pt span{font-size:var(--text-4xl);font-weight:600;letter-spacing:-.03em}
-.loader{position:fixed;inset:0;z-index:95;background:oklch(1 0 0);color:oklch(.18 .008 50);display:none;align-items:center;justify-content:center;gap:.4em;font-size:var(--text-lg);font-weight:500}
+/* Loader awal: wordmark kiri atas, peringatan kanan atas, angka persen besar kiri bawah, garis progres di dasar.
+   Halaman di bawahnya tertutup dan tidak bisa di-scroll sampai semua aset selesai dimuat (loader.ts). */
+.loader{position:fixed;inset:0;z-index:95;background:oklch(1 0 0);color:oklch(.18 .008 50);display:none;flex-direction:column;justify-content:space-between;padding:clamp(1.25rem,3vw,2.5rem) var(--gutter) 0}
 html.is-loading .loader{display:flex}
-
-.loader b{font-weight:700;letter-spacing:-.03em}
-.loader .ctr{font-variant-numeric:tabular-nums;color:var(--orange)}
+.loader-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:1.25rem 2rem}
+.loader-mark{font-size:var(--text-lg);font-weight:700;letter-spacing:-.03em}
+.loader-mark span{color:var(--orange)}
+.loader-note{max-width:34ch;font-size:var(--text-sm);line-height:1.45;color:var(--color-muted)}
+.loader-num{margin:auto 0 clamp(.75rem,2svh,1.5rem);font-size:clamp(4.5rem,18vw,15rem);line-height:.85;font-weight:600;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.loader-bar{height:3px;margin-inline:calc(var(--gutter) * -1);background:oklch(.92 .006 70)}
+.loader-bar i{display:block;height:100%;width:100%;background:var(--orange);transform:scaleX(0);transform-origin:left center}
+@media (max-width:640px){.loader-note{max-width:none}}
 
 /* Kursor */
 /* will-change + contain: titik kursor dipindah compositor di layer sendiri; tanpa ini posisi lamanya kadang tidak di-repaint dan meninggalkan jejak garis putus-putus di halaman */
@@ -381,4 +388,4 @@ main{position:relative;z-index:1;background:var(--color-bg);transition:backgroun
 /* Scroll selalu di window (ScrollTrigger + Lenis memakai window); cegah wrapper luar menjadikan body scroll container */
 html{height:auto;overflow-y:auto}
 body{height:auto;overflow:visible}
-html.is-loading{overflow:hidden}
+/* Saat loader tampil, scroll ditahan oleh loader.ts lewat event (bukan overflow) agar tata letak tidak bergeser */

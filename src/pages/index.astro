@@ -905,6 +905,10 @@ const disciplines = [
     const bar = document.querySelector<HTMLElement>('.site-header .wrap');
     const text = [...document.querySelectorAll<HTMLElement>('.e-hero-meta > *, .e-hero-lead > *')];
     if (!img || window.scrollY > 5) { html.classList.remove('hero-intro'); return; }
+    // Loader awal masih menutup halaman: mulai intro saat loader bergeser keluar (loader.ts mengirim bb:loaded).
+    if (html.classList.contains('is-loading')) {
+      await new Promise<void>((done) => addEventListener('bb:loaded', () => done(), { once: true }));
+    }
     // Tunggu sampai video siap diputar (maks. 1 detik) dan satu frame setelah inisialisasi halaman, supaya awal
     // decoding video dan ScrollTrigger.refresh tidak jatuh di tengah animasi.
     if (video && video.readyState < 3) {

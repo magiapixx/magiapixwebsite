@@ -25,7 +25,9 @@ initMenu(); initAccordions(); initFilters(); initVideo();
 initMobileProjectPreview();
 
 if (!motionOn()) {
-  root.classList.remove('is-loading', 'pt-cover');
+  // Tanpa animasi: loader tetap menahan halaman sampai semua aset selesai, lalu langsung hilang.
+  root.classList.remove('pt-cover');
+  runLoader(() => {});
 } else {
   root.classList.add('js-anim', 'js-mood');
   initLenis();
