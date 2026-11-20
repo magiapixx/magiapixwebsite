@@ -892,7 +892,51 @@ const disciplines = [
       }, { passive: true });
     }
   };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); intro(); works(); outro(); ScrollTrigger.refresh(); }));
+  // Animasi muncul beranda ("video lebih dulu"): kotak video membesar dari tengah, lalu menu bar dan teks hero
+  // menyusul. Hanya memakai properti yang tidak disentuh timeline scroll hero (transform pada kotak video,
+  // opacity/y pada isi menu bar dan anak-anak elemen teks), jadi keduanya tidak saling menimpa.
+  // Kotak video dibesarkan dengan transform (dikerjakan GPU), bukan clip-path: clip-path bersudut bulat memaksa
+  // kotak berisi video digambar ulang tiap frame dan membuat video tersendat selama intro.
+  const heroAppear = async () => {
+    const html = document.documentElement;
+    if (!html.classList.contains('hero-intro')) return;
+    const img = document.querySelector<HTMLElement>('.e-hero-img');
+    const video = img?.querySelector<HTMLVideoElement>('video') ?? null;
+    const bar = document.querySelector<HTMLElement>('.site-header .wrap');
+    const text = [...document.querySelectorAll<HTMLElement>('.e-hero-meta > *, .e-hero-lead > *')];
+    if (!img || window.scrollY > 5) { html.classList.remove('hero-intro'); return; }
+    // Tunggu sampai video siap diputar (maks. 1 detik) dan satu frame setelah inisialisasi halaman, supaya awal
+    // decoding video dan ScrollTrigger.refresh tidak jatuh di tengah animasi.
+    if (video && video.readyState < 3) {
+      await new Promise<void>((done) => {
+        const t = setTimeout(done, 1000);
+        video.addEventListener('canplay', () => { clearTimeout(t); done(); }, { once: true });
+      });
+    }
+    // Event load memicu ScrollTrigger.refresh() penuh (main.ts) yang menahan frame ~0,4 detik; mulai sesudahnya
+    // (maks. 1,5 detik menunggu) supaya refresh itu tidak jatuh di tengah animasi.
+    if (document.readyState !== 'complete') {
+      await new Promise<void>((done) => {
+        const t = setTimeout(done, 1500);
+        addEventListener('load', () => { clearTimeout(t); setTimeout(done, 50); }, { once: true });
+      });
+    }
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    gsap.set(img, { willChange: 'transform' });
+    const tl = gsap.timeline();
+    tl.fromTo(img, { scale: 0.4, transformOrigin: '50% 50%' }, { scale: 1, duration: 1.6, ease: 'power3.inOut' }, 0);
+    if (bar) tl.fromTo(bar, { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 1.1);
+    if (text.length) tl.fromTo(text, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power2.out', stagger: 0.08 }, 1.15);
+    // Nilai awal sudah dipasang inline oleh fromTo, jadi kelas penyembunyi CSS bisa dilepas.
+    html.classList.remove('hero-intro');
+    // Scroll/sentuh/keyboard selama intro: langsung lompat ke akhir supaya tidak bentrok dengan luncuran hero.
+    const finish = () => { tl.progress(1); off(); };
+    const evs = ['wheel', 'touchstart', 'keydown'] as const;
+    const off = () => evs.forEach((ev) => removeEventListener(ev, finish));
+    evs.forEach((ev) => addEventListener(ev, finish, { passive: true }));
+    tl.eventCallback('onComplete', () => { off(); gsap.set(img, { clearProps: 'transform,transformOrigin,willChange' }); gsap.set([bar, ...text].filter(Boolean), { clearProps: 'opacity,visibility,transform' }); });
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); outro(); ScrollTrigger.refresh(); }));
 </script>
 
 <style>
@@ -921,6 +965,9 @@ const disciplines = [
 
   /* 1. Hero */
   .e-hero { position: relative; overflow: clip; }
+  /* Keadaan awal animasi muncul (kelas dipasang di <head> oleh BaseLayout, dilepas oleh heroAppear) */
+  :global(html.hero-intro) .e-hero-img { transform: scale(0.4); }
+  :global(html.hero-intro .site-header .wrap), :global(html.hero-intro) .e-hero-meta > *, :global(html.hero-intro) .e-hero-lead > * { opacity: 0; }
   :global(html.js-anim) .e-hero { height: 100svh; overflow: hidden; }
   .e-hero-top { position: relative; z-index: 3; display: grid; gap: 32px; padding-top: 120px; padding-bottom: clamp(24px, 3vw, 40px); }
   .e-hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; will-change: transform; }

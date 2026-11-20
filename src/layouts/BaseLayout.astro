@@ -25,6 +25,12 @@ const { title, description, image, type, loader = false, noindex = false } = Ast
         var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (reduce) r.classList.add('sys-reduce');
         if (pref === 'off' || (reduce && pref !== 'on')) { r.classList.add('no-motion'); return; }
+        // Beranda: sembunyikan menu bar dan hero sebelum paint pertama; animasi muncul (index.astro) membukanya.
+        // Pengaman: bila skrip animasi gagal jalan, kelas dilepas setelah 5 detik supaya konten tetap terlihat.
+        if (location.pathname === '/') {
+          r.classList.add('hero-intro');
+          setTimeout(function () { r.classList.remove('hero-intro'); }, 5000);
+        }
         try {
           if (sessionStorage.getItem('bb-pt')) r.classList.add('pt-cover');
           if (loader && !sessionStorage.getItem('bb-loaded')) r.classList.add('is-loading');
