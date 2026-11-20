@@ -2,7 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { getImage, Image } from 'astro:assets';
-const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+// Proyek klien dengan situs live (punya url) tampil paling atas di halaman ini; sisanya menyusul sesuai order.
+// Urutan beranda (Selected works) tetap memakai order saja.
+const projects = (await getCollection('projects')).sort((a, b) => (Number(!!b.data.url) - Number(!!a.data.url)) || a.data.order - b.data.order);
 const filters = [['all', 'All'], ['branding', 'Branding'], ['web', 'Web'], ['product', 'Product'], ['campaign', 'Campaign']];
 
 const projectImages = await Promise.all(

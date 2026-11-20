@@ -23,22 +23,15 @@ export function initMobileProjectPreview() {
       return;
     }
 
+    // Proyek yang barisnya sudah mencapai tengah layar membuka gambarnya dan tetap terbuka, juga saat
+    // halaman di-scroll kembali ke atas (kelas hanya ditambah, tidak pernah dilepas di HP).
     const center = window.innerHeight / 2;
-    let active: HTMLElement | null = null;
-    let closest = Infinity;
     entries.forEach((entry) => {
-      if (entry.hidden) return;
+      if (entry.hidden || entry.classList.contains('is-centered')) return;
       const row = $('.prow', entry);
       if (!row) return;
-      const rect = row.getBoundingClientRect();
-      if (rect.top > center || rect.bottom < center) return;
-      const distance = Math.abs((rect.top + rect.bottom) / 2 - center);
-      if (distance < closest) {
-        active = entry;
-        closest = distance;
-      }
+      if (row.getBoundingClientRect().top <= center) entry.classList.add('is-centered');
     });
-    entries.forEach((entry) => entry.classList.toggle('is-centered', entry === active));
   };
   const scheduleUpdate = () => {
     if (!frame) frame = requestAnimationFrame(update);
