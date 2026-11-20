@@ -35,22 +35,24 @@ const projectImages = await Promise.all(
   .plist { --project-divider-color: color-mix(in srgb, var(--color-border) 50%, transparent); border-top-color: var(--project-divider-color); }
   .prow { border-bottom-color: var(--project-divider-color); }
   .mobile-project-preview { display: none; }
-  .mobile-project-preview-inner { min-height: 0; overflow: hidden; }
-  .mobile-project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: var(--radius-card); clip-path: inset(0 0 100% 0 round var(--radius-card)); transition: clip-path var(--duration-slow) var(--ease-brand); }
+  .mobile-project-preview-inner { overflow: hidden; border-radius: var(--radius-card); }
+  .mobile-project-preview img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
 
+  /* HP: ruang gambar disiapkan sejak awal (tinggi halaman tidak pernah berubah saat scroll). Dulu pratinjau dibuka
+     dengan animasi grid-template-rows: tinggi halaman berubah tiap frame selagi pengguna scroll, browser menghitung
+     ulang tata letak dan mengoreksi posisi scroll, sehingga scroll sesekali tersendat. Sekarang gambar hanya muncul
+     lewat opacity + transform (dikerjakan GPU) saat barisnya mencapai tengah layar (is-centered, effects.ts). */
   @media (max-width: 767px) {
     .project-entry { border-bottom: 1px solid var(--project-divider-color); }
     .project-entry :global(.prow) { padding-block: clamp(2.75rem, 11vw, 3rem); border-bottom: 0; }
-    .mobile-project-preview { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows var(--duration-slow) var(--ease-brand), opacity var(--duration-slow) var(--ease-brand); }
-    .mobile-project-preview-inner { padding-inline: 4px; }
-    .project-entry.is-centered .mobile-project-preview { grid-template-rows: 1fr; opacity: 1; }
-    .project-entry.is-centered .mobile-project-preview-inner { padding-bottom: 20px; }
-    .project-entry.is-centered .mobile-project-preview img { clip-path: inset(0 round var(--radius-card)); }
+    .mobile-project-preview { display: block; padding: 0 4px 20px; }
+    .mobile-project-preview-inner { opacity: 0; transform: translateY(32px) scale(.96); transform-origin: 50% 0; transition: opacity var(--duration-slow) var(--ease-brand), transform var(--duration-slow) var(--ease-brand); }
+    .project-entry.is-centered .mobile-project-preview-inner { opacity: 1; transform: none; }
     :global(#pj-preview) { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .mobile-project-preview, .mobile-project-preview img { transition: none; }
+    .mobile-project-preview-inner { transition: none; }
   }
 </style>
 
