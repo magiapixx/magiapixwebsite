@@ -38,15 +38,18 @@ const disciplines = [
       </div>
     </div>
     <div class="e-hero-img">
+      <!-- WebM (1,4 MB) dimuat lebih dulu; MP4 (5,4 MB) hanya untuk browser yang tidak bisa memutar WebM -->
       <video
-        src="/assets/aistudio/StockCake-Dewy_Blue_Flower-0f877554-1627-4960-810f-e3df7fc085b4-original_fb1358e8.mp4"
         autoplay
         loop
         muted
         playsinline
         preload="auto"
         aria-label="Dewy blue petals in slow macro motion"
-      ></video>
+      >
+        <source src="/assets/aistudio/magiapix.webm" type="video/webm" />
+        <source src="/assets/aistudio/StockCake-Dewy_Blue_Flower-0f877554-1627-4960-810f-e3df7fc085b4-original_fb1358e8.mp4" type="video/mp4" />
+      </video>
       <div class="e-hero-scrim" aria-hidden="true"></div>
     </div>
     <p class="e-word" aria-hidden="true"><span class="e-word-in"><span>magia</span><b>pix</b></span></p>

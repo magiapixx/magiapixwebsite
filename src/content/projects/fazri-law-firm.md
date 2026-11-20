@@ -10,7 +10,7 @@ role: "Web design, art direction, development"
 result: "A multi-page firm site built around services, case studies and insights"
 cover: "../../assets/images/p-fazri-law-firm.jpg"
 coverAlt: "Fazri & Partners Law Firm hero: a lawyer at a window over the Jakarta skyline at dusk."
-url: "https://fazri-partners-law-firm.vercel.app/"
+url: "https://fazri-lawfirm.magiapix.com/"
 challenge: "Present two decades of corporate, litigation, finance and property work with the gravity that investors and families expect from a top firm."
 approach: "Editorial serif headlines over cinematic dusk photography, with separate pages for the firm, services, case studies and insights."
 metrics:

@@ -10,7 +10,7 @@ role: "Brand visualization, web design, creative development"
 result: "Three audience journeys in one motion-led experience"
 cover: "../../assets/images/p-veritas-partners.jpg"
 coverAlt: "Veritas Partners hero: 'Empowering Legal Excellence with Strategic Talent and Consulting Solutions' over glass office towers."
-url: "https://veritas-partners-site.vercel.app/"
+url: "https://veritas.magiapix.com/"
 challenge: "Speak to three very different audiences, lawyers, law firms and in-house legal teams, without the site feeling like three sites."
 approach: "A calm monochrome system with a lime accent, sculptural 3D imagery and scroll-led motion, with a dedicated services journey for each audience."
 metrics:

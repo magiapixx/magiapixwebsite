@@ -10,7 +10,7 @@ role: "Web design, development"
 result: "A complete firm presence on a single, fast page"
 cover: "../../assets/images/p-fazri-partners.jpg"
 coverAlt: "Fazri & Partners hero: the headline 'Kepastian hukum, dengan integritas.' over a dark law library."
-url: "https://fazri-partners.vercel.app/"
+url: "https://fazri.magiapix.com/"
 challenge: "Give an independent Jakarta law firm a credible online presence that explains its practice and turns visitors into consultation requests."
 approach: "One scrolling page with about, six practice areas, partners, a four-step process and a contact form, set in a classic serif with gold accents on deep navy."
 metrics:
