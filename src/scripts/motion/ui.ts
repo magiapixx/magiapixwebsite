@@ -44,26 +44,20 @@ export function initAccordions() {
       const open = !it.classList.contains('open');
       // Panel yang membuka/menutup mengubah tinggi halaman. Tanpa penahan, perubahan posisi scroll terbaca
       // sebagai scroll pengguna dan memicu luncuran section (mis. ke footer). Jadi luncuran ditahan selama animasi.
-      // Posisi scroll tidak dikoreksi: panel membuka ke bawah seperti accordion biasa, dan bila item terbuka di atas
-      // ikut menutup, judul yang diklik bergeser naik secara alami.
+      // Posisi scroll tidak dikoreksi: panel membuka ke bawah seperti accordion biasa.
+      // Item lain yang sedang terbuka TIDAK ditutup: setiap item buka/tutup sendiri, beberapa boleh terbuka bersamaan.
       suppressGlides(MOTION.base * 1000 + 400);
       const top0 = btn.getBoundingClientRect().top;
-      let shrinkAbove = 0;
-      // Tinggi panel lain diukur SEBELUM kelas open dilepas; sesudahnya CSS sudah membuatnya 0, panel kolaps seketika
-      // dan halaman melompat (mis. 674px dalam satu frame) alih-alih menutup halus.
-      $$('.acc-item.open', it.parentElement!).forEach((o) => { if (o === it) return;
-        const p = $('.acc-panel', o)!, h = p.offsetHeight;
-        if (o.compareDocumentPosition(it) & Node.DOCUMENT_POSITION_FOLLOWING) shrinkAbove += h;
-        o.classList.remove('open'); $('.acc-btn', o)!.setAttribute('aria-expanded', 'false');
-        if (motionOn()) gsap.fromTo(p, { height: h }, { height: 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height' }); });
-      const h0 = panel.offsetHeight; // diukur sebelum kelas berubah (lihat catatan di atas)
+      // Tinggi diukur SEBELUM kelas open berubah; sesudahnya CSS sudah membuatnya 0, panel kolaps seketika
+      // dan halaman melompat alih-alih menutup halus.
+      const h0 = panel.offsetHeight;
       it.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
       if (motionOn()) gsap.fromTo(panel, { height: open ? 0 : h0 }, { height: open ? 'auto' : 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'height', onComplete: () => ScrollTrigger.refresh() });
-      // Pengaman: bila panel di atas yang menutup akan membawa judul ini keluar dari atas layar, halaman di-scroll
-      // pelan bersamaan supaya judul berhenti ~120px dari atas layar.
-      const endTop = top0 - shrinkAbove, minTop = 120;
-      if (endTop < minTop) {
-        const to = window.scrollY + endTop - minTop, lenis = getLenis();
+      // Pengaman: bila judul yang diklik terpotong di atas layar, halaman di-scroll pelan supaya judul
+      // berhenti ~120px dari atas layar.
+      const minTop = 120;
+      if (top0 < minTop) {
+        const to = window.scrollY + top0 - minTop, lenis = getLenis();
         if (lenis) lenis.scrollTo(to, { duration: MOTION.base, force: true });
         else window.scrollTo({ top: to, behavior: 'smooth' });
       }

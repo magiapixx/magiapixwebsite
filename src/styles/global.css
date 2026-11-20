@@ -247,7 +247,8 @@ html.no-motion .email-contact::after{animation:none}
 .acc-item{border-bottom:1px solid var(--color-border)}
 .acc-btn{display:grid;grid-template-columns:3rem 1fr auto;gap:16px;align-items:center;width:100%;padding:26px 8px;background:none;border:0;text-align:left;cursor:pointer;transition:background-color var(--duration-fast)}
 @media (min-width:768px){.acc-btn{grid-template-columns:6rem 1fr auto}}
-.acc-btn:hover{background:color-mix(in oklch,var(--color-fg) 5%,transparent)}
+/* Tanpa latar abu-abu saat hover/klik (di layar sentuh hover "menempel" setelah tap) dan tanpa highlight tap bawaan */
+.acc-btn{-webkit-tap-highlight-color:transparent}
 .acc-btn .arr{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--color-border);color:var(--orange);transition:transform var(--duration-base) var(--ease-brand),background-color var(--duration-fast)}
 .acc-item.open .arr{transform:rotate(90deg);background:var(--orange);color:oklch(.99 0 0);border-color:var(--orange)}
 .acc-panel{overflow:hidden}
