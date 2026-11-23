@@ -23,7 +23,8 @@ export function initMenu() {
     menu.classList.add('open'); menu.setAttribute('aria-hidden', 'false'); btn.setAttribute('aria-expanded', 'true'); getLenis()?.stop();
     if (motionOn()) gsap.timeline()
       .fromTo(menu, { clipPath: 'inset(0% 0% 100% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: MOTION.base, ease: MOTION.c2 })
-      .fromTo($$('.menu-list a', menu), { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: MOTION.base, ease: MOTION.ease, stagger: 0.06, clearProps: 'opacity,transform' }, '-=0.25')
+      .from($$('.menu-list a', menu), { y: 20, opacity: 0, duration: MOTION.base, ease: MOTION.ease, stagger: 0.05, clearProps: 'opacity,transform' }, '-=0.25')
+      .from(close, { y: 20, opacity: 0, duration: MOTION.base, ease: MOTION.ease, clearProps: 'opacity,transform' }, '<')
       .fromTo($$('.menu-info > *', menu), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: MOTION.base, ease: MOTION.ease, stagger: 0.05, clearProps: 'opacity,transform' }, '<');
     setTimeout(() => close.focus(), 50);
   };

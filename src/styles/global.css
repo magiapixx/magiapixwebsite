@@ -137,18 +137,19 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 .menu.open{visibility:visible;clip-path:inset(0 0 0 0)}
 .menu-in{display:grid;grid-template-columns:1fr;gap:32px;align-content:center;height:100%;padding:96px var(--gutter) 40px}
 @media (min-width:1024px){.menu-in{grid-template-columns:4fr 8fr;align-items:center}}
-.menu-close{position:absolute;top:16px;right:var(--gutter);min-height:44px;background:none;border:0;cursor:pointer;font-weight:600;font-size:var(--text-sm)}
+.menu-close{position:absolute;top:16px;right:var(--gutter);min-height:44px;background:none;border:0;cursor:pointer;font-weight:600;font-size:var(--text-sm);opacity:.25;transition:opacity var(--duration-fast) var(--ease-brand)}
+.menu-close:hover,.menu-close:focus-visible{opacity:1}
 .menu-list{display:flex;flex-direction:column;align-items:flex-start}
 @media (min-width:1024px){.menu-list{align-items:flex-end}}
 /* Link menu: ukuran mengikuti lebar (--text-mega) sekaligus tinggi layar (maks. 14svh). Di layar penuh 1920x1080 tetap ~150px,
    tapi di jendela browser biasa (tinggi berkurang karena tab/toolbar) dan laptop pendek ikut mengecil supaya keempat menu muat. */
 .menu-list a{display:flex;align-items:center;gap:.25em;font-size:min(var(--text-mega),14svh);line-height:1;letter-spacing:-.04em;font-weight:600;transition:opacity var(--duration-fast) var(--ease-brand)}
-.menu-list:hover a{opacity:.25}.menu-list a:hover,.menu-list a:focus-visible{opacity:1}
+.menu-list:where(:has(a.is-active)) a:not(.is-active),.menu-list:where(:has(a:hover,a:focus-visible)) a{opacity:.25}
+.menu-list a:hover,.menu-list a:focus-visible{opacity:1}
 .menu-list a sup{font-size:var(--text-xs);font-weight:500;letter-spacing:0;vertical-align:top;margin-left:.4em;opacity:.6}
 .menu-list .arr{display:inline-block;width:.6em;overflow:hidden;opacity:0;transform:translateX(-20px);transition:all var(--duration-fast) var(--ease-brand)}
 .menu-list a:hover .arr{opacity:1;transform:none}
-.menu-list a.is-active{color:var(--orange)}
-.menu-list a.is-active sup{color:var(--orange);opacity:1}
+.menu-list a.is-active sup{opacity:1}
 .menu-info{display:grid;gap:20px;align-content:start}
 .menu-info .btn{background:var(--orange);color:oklch(.99 0 0);border-color:var(--orange)}
 .menu-info .btn::before{background:oklch(.45 .2 262)}
@@ -184,7 +185,7 @@ html.is-loading .loader{display:flex}
 .loader-mark{font-size:var(--text-lg);font-weight:700;letter-spacing:-.03em}
 .loader-mark span{color:var(--orange)}
 .loader-note{max-width:40ch;font-size:var(--text-sm);line-height:1.45;color:var(--color-muted)}
-.loader-num{margin:auto 0 clamp(.75rem,2svh,1.5rem);font-size:clamp(4.5rem,18vw,15rem);line-height:.85;font-weight:600;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.loader-num{margin:auto 0 clamp(.75rem,2svh,1.5rem);color:var(--orange);font-size:clamp(4.5rem,18vw,15rem);line-height:.85;font-weight:600;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
 .loader-bar{height:3px;margin-inline:calc(var(--gutter) * -1);background:oklch(.92 .006 70)}
 .loader-bar i{display:block;height:100%;width:100%;background:var(--orange);transform:scaleX(0);transform-origin:left center}
 @media (max-width:640px){.loader-note{max-width:none}}
