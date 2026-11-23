@@ -7,17 +7,15 @@ const isActive = (href: string) => {
   if (target === '/') return pathname === '/';
   return pathname === target || pathname.startsWith(target + '/');
 };
-// The home page animates the heading word by word in its own script; elsewhere it uses the shared line reveal.
-const isHome = Astro.url.pathname === '/';
 const year = new Date().getFullYear();
 ---
 <!-- CTA dan footer digabung jadi satu layar biru: ajakan kontak di tengah, wordmark MAGIAPIX raksasa
      sedikit blur di bawahnya, baris kecil (hak cipta, menu, back to top) paling bawah. -->
 <footer class="site-footer fx" data-mood="night" aria-labelledby="fx-t">
   <div class="fx-main">
-    <h2 class="e-cta-t fx-t" id="fx-t" data-split={isHome ? undefined : ''}>Let's build something great together.</h2>
-    <p class="fx-sub" data-reveal>Get in touch to explore how we can help your business reach its full potential.</p>
-    <div class="fx-acts" data-reveal>
+    <h2 class="e-cta-t fx-t" id="fx-t">Let's build something great together.</h2>
+    <p class="fx-sub">Get in touch to explore how we can help your business reach its full potential.</p>
+    <div class="fx-acts">
       <Button href={SITE.emailHref} label="Contact us" variant="solid" magnetic />
       <Button href={`${SITE.emailHref}?subject=${encodeURIComponent('Request a quote')}`} label="Request a quote" />
     </div>
@@ -50,7 +48,11 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+  import { MOTION, motionOn } from '../scripts/motion/tokens';
   import { suppressGlides } from '../scripts/glide';
+  gsap.registerPlugin(SplitText);
 
   // Tombol email melayang menutupi "Back to top" dan mengulang tombol email di sini: sembunyikan saat footer terlihat.
   const fx = document.querySelector<HTMLElement>('.fx');
@@ -59,11 +61,88 @@ const year = new Date().getFullYear();
   // menganggapnya terlihat. Footer benar-benar tersingkap saat dasar <main> naik melewati bawah layar; status ini
   // dipasang sebagai html.footer-in supaya elemen melayang lain (mis. bar proyek) ikut menyingkir.
   const main = document.getElementById('main');
+
+  let footerTl: gsap.core.Timeline | null = null;
+  let revealed = false;
+
+  if (fx && main && motionOn()) {
+    const title = fx.querySelector<HTMLElement>('.fx-t');
+    const sub = fx.querySelector<HTMLElement>('.fx-sub');
+    const acts = [...fx.querySelectorAll<HTMLElement>('.fx-acts > *')];
+    const wmLetters = [...fx.querySelectorAll<HTMLElement>('.fx-wm span')];
+    const barItems = [...fx.querySelectorAll<HTMLElement>('.fx-bar > *')];
+
+    const sp = title ? new SplitText(title, { type: 'words', aria: 'auto' }) : null;
+    const words = sp ? (sp.words as HTMLElement[]) : [];
+
+    const tl = gsap.timeline({ paused: true });
+    if (words.length) {
+      tl.from(words, {
+        y: 40,
+        opacity: 0,
+        duration: MOTION.base * 1.25,
+        ease: MOTION.ease,
+        stagger: 0.04,
+        clearProps: 'y,opacity',
+      }, 0);
+    }
+    if (sub) {
+      tl.from(sub, {
+        y: 28,
+        opacity: 0,
+        duration: MOTION.base * 1.15,
+        ease: MOTION.ease,
+        clearProps: 'y,opacity',
+      }, 0.16);
+    }
+    if (acts.length) {
+      tl.from(acts, {
+        y: 24,
+        opacity: 0,
+        duration: MOTION.base * 1.1,
+        ease: MOTION.ease,
+        stagger: 0.08,
+        clearProps: 'y,opacity',
+      }, 0.28);
+    }
+    if (wmLetters.length) {
+      tl.from(wmLetters, {
+        yPercent: 45,
+        opacity: 0,
+        duration: MOTION.slow * 0.85,
+        ease: MOTION.ease,
+        stagger: 0.035,
+        clearProps: 'transform,opacity',
+      }, 0.42);
+    }
+    if (barItems.length) {
+      tl.from(barItems, {
+        y: 18,
+        opacity: 0,
+        duration: MOTION.base,
+        ease: MOTION.ease,
+        stagger: 0.07,
+        clearProps: 'y,opacity',
+      }, 0.56);
+    }
+    footerTl = tl;
+  }
+
   if (fx && main) {
     const sync = () => {
-      const on = main.getBoundingClientRect().bottom < innerHeight * 0.85;
+      const mainBottom = main.getBoundingClientRect().bottom;
+      const on = mainBottom < innerHeight * 0.85;
       document.documentElement.classList.toggle('footer-in', on);
       fab?.classList.toggle('is-off', on);
+      if (footerTl) {
+        if (!revealed && mainBottom <= innerHeight * 0.72) {
+          revealed = true;
+          footerTl.restart();
+        } else if (revealed && mainBottom >= innerHeight * 0.98) {
+          revealed = false;
+          footerTl.pause(0);
+        }
+      }
     };
     addEventListener('scroll', sync, { passive: true });
     addEventListener('resize', sync);

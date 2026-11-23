@@ -472,11 +472,6 @@ const disciplines = [
   };
 
   // Selected works: foto bergerak pelan (parallax) dan judul naik saat kartu masuk layar.
-  const outro = () => {
-    if (root.classList.contains('no-motion')) return;
-    const ct = document.querySelector<HTMLElement>('.e-cta-t');
-    if (ct) { const sp = new SplitText(ct, { type: 'words', aria: 'none' }); gsap.from(sp.words, { yPercent: 60, opacity: 0, duration: 0.9, ease: 'power4.out', stagger: 0.04, scrollTrigger: { trigger: ct, start: 'top 80%' } }); }
-  };
   const works = () => {
     if (root.classList.contains('no-motion')) return;
     document.querySelectorAll<HTMLElement>('.e-wk-item').forEach((it, idx) => {
@@ -939,7 +934,7 @@ const disciplines = [
     evs.forEach((ev) => addEventListener(ev, finish, { passive: true }));
     tl.eventCallback('onComplete', () => { off(); gsap.set(img, { clearProps: 'transform,transformOrigin,willChange,opacity,visibility' }); gsap.set([bar, ...text].filter(Boolean), { clearProps: 'opacity,visibility,transform' }); });
   };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); outro(); ScrollTrigger.refresh(); }));
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); ScrollTrigger.refresh(); }));
 </script>
 
 <style>
