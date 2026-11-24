@@ -2,22 +2,36 @@
 // Beranda (desain E · "Studio", disetujui owner 2026-11-09): gabungan referensi Studio Opus (layout putih bersih,
 // daftar layanan bernomor, section gelap, pricing, perspectives) dan Mondra (wordmark raksasa, grid karya 2×2,
 // workflow 3 kartu, testimoni gambar besar, awards). Aksen biru kini berlaku untuk seluruh situs (global.css).
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Feature, type BentoDisciplineItem } from '../components/ui/feature-section-with-bento-grid';
 import { img } from '../data/site';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const selectedWorks = projects.slice(0, 4);
 const pad = (n: number) => String(n).padStart(2, '0');
 
-// What we do: four disciplines, each with the image shown while its row is open.
-const disciplines = [
-  { name: 'Web design', text: 'Websites and interfaces with a clear structure and a distinct look, tested with real users.', image: 'p-northwind' },
-  { name: 'Creative web development', text: 'Motion, WebGL and scroll-driven storytelling, built fast and accessible.', image: 'p-halcyon' },
-  { name: 'Web app', text: 'Dashboards, portals and SaaS products built to last, with tests, docs and a clean handover.', image: 'p-meridian' },
-  { name: 'Brand visualization', text: 'Brand identities, 3D visuals and motion that make your product recognizable everywhere.', image: 'p-pulse' },
+// What we do: four core disciplines presented in the asymmetric Bento grid.
+const disciplines: Array<{ name: string; text: string; image: string; iconKey: BentoDisciplineItem['iconKey'] }> = [
+  { name: 'Web design', text: 'Websites and interfaces with a clear structure and a distinct look, tested with real users.', image: 'p-northwind', iconKey: 'design' },
+  { name: 'Creative web development', text: 'Motion, WebGL and scroll-driven storytelling, built fast and accessible.', image: 'p-halcyon', iconKey: 'dev' },
+  { name: 'Web app', text: 'Dashboards, portals and SaaS products built to last, with tests, docs and a clean handover.', image: 'p-meridian', iconKey: 'app' },
+  { name: 'Brand visualization', text: 'Brand identities, 3D visuals and motion that make your product recognizable everywhere.', image: 'p-pulse', iconKey: 'brand' },
 ];
+
+const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
+  disciplines.map(async (d) => {
+    const optimized = await getImage({ src: img(d.image), width: 1200, format: 'webp' });
+    return {
+      name: d.name,
+      text: d.text,
+      imageSrc: optimized.src,
+      imageAlt: `${d.name} visual showcase`,
+      iconKey: d.iconKey,
+    };
+  }),
+);
 ---
 <BaseLayout title="Magiapix" description="Magiapix is an independent design and engineering studio in Brooklyn. Strategy, brand, websites and products for startups and growing companies.">
   <!-- 1. Hero: meta + angka, foto lebar, wordmark raksasa -->
@@ -99,33 +113,15 @@ const disciplines = [
     ))}
   </div>
 
-  <!-- 4b. What we do: label + gambar di kiri (berganti sesuai baris yang terbuka), daftar disiplin besar berupa akordeon di kanan -->
+  <!-- 4b. What we do: asymmetric Bento grid showcasing the studio's four disciplines -->
   <section class="sec e-wd" data-mood="paper" aria-labelledby="e-wd-t">
-    <div class="wrap e-wd-in">
-      <div class="e-wd-side">
-        <h2 class="e-h2 e-wd-t" id="e-wd-t" data-reveal>What we do <sup>({disciplines.length})</sup></h2>
-        <div class="e-wd-frame" data-clip aria-hidden="true">
-          {disciplines.map((d) => <Image class="e-wd-img" src={img(d.image)} alt="" widths={[480, 960]} sizes="(min-width: 1024px) 30vw, 92vw" />)}
-        </div>
-      </div>
-      <div class="e-wd-main">
-        <div class="acc e-wd-list" data-stagger>
-          {disciplines.map((d, i) => (
-            <div class:list={['acc-item', { open: i === 0 }]}>
-              <button class="acc-btn" type="button" aria-expanded={i === 0 ? 'true' : 'false'} aria-controls={`wd-${i}`}>
-                <span class="e-wd-name">{d.name}</span>
-                <span class="arr" aria-hidden="true">+</span>
-              </button>
-              <div class="acc-panel" id={`wd-${i}`}>
-                <div class="e-wd-body">
-                  <p>{d.text}</p>
-                  <div class="e-wd-pic" aria-hidden="true"><Image src={img(d.image)} alt="" widths={[480, 960]} sizes="92vw" /></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div class="wrap">
+      <Feature
+        badge={`What we do (${disciplines.length})`}
+        title="Design, code, and motion under one roof."
+        description="Four core disciplines engineered together from first sketch to production launch."
+        items={bentoDisciplines}
+      />
     </div>
   </section>
 
@@ -223,13 +219,23 @@ const disciplines = [
       ? Math.max(320, hero.clientHeight - getInitImgTop() - getGutter())
       : Math.min(720, Math.max(320, innerHeight * 0.58)));
     const getInitRadius = () => Math.min(32, Math.max(20, innerWidth * 0.022));
-    const getTargetTop = () => (innerWidth >= 768 ? 28 : 20);
+    const isMobile = () => innerWidth < 768;
     const isDesktop = () => innerWidth >= 1024;
     const isMetaHidden = () => !heroMeta || getComputedStyle(heroMeta).display === 'none';
     const isLeadFirst = () => !!heroLead && !isMetaHidden() && heroLead.offsetTop < heroMeta!.offsetTop;
 
     // Gap between the stacked, scaled-down headline and meta row on mobile/tablet.
     const STACK_GAP = 24;
+
+    const getTargetTop = () => {
+      if (!isMobile()) return 28;
+      const leadH = heroLead ? heroLead.offsetHeight * 0.6 : 0;
+      const metaH = !isMetaHidden() && heroMeta ? heroMeta.offsetHeight * 0.6 : 0;
+      const gap = leadH && metaH ? STACK_GAP : 0;
+      const stackH = leadH + gap + metaH;
+      const maxTop = Math.max(20, (word.offsetTop || hero.clientHeight) - stackH - 24);
+      return Math.min(maxTop, Math.max(20, Math.round((hero.clientHeight - stackH) / 2)));
+    };
 
     const getMetaTargetTop = () => {
       if (isDesktop() || !heroLead || !isLeadFirst()) return getTargetTop();
@@ -242,7 +248,7 @@ const disciplines = [
     };
 
     const getMenuTargetTop = () => {
-      const leadTop = getLeadTargetTop();
+      const leadTop = isMobile() ? 20 : getLeadTargetTop();
       const iconOffset = menuIcon ? menuIcon.offsetTop : 18;
       return leadTop + 4 - iconOffset;
     };
@@ -346,7 +352,7 @@ const disciplines = [
           top: 0,
           left: 0,
           right: 0,
-          height: () => hero.clientHeight,
+          height: () => Math.max(Math.ceil(hero.getBoundingClientRect().height), innerHeight) + 2,
           borderRadius: 0,
           duration: 1,
           ease: 'power2.inOut',
@@ -934,7 +940,25 @@ const disciplines = [
     evs.forEach((ev) => addEventListener(ev, finish, { passive: true }));
     tl.eventCallback('onComplete', () => { off(); gsap.set(img, { clearProps: 'transform,transformOrigin,willChange,opacity,visibility' }); gsap.set([bar, ...text].filter(Boolean), { clearProps: 'opacity,visibility,transform' }); });
   };
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); ScrollTrigger.refresh(); }));
+  // What we do dipin saat dasarnya menyentuh bawah layar (tanpa pinSpacing), sehingga footer di bawahnya
+  // meluncur naik dan mengoverlay What we do.
+  const footerOverlay = () => {
+    if (root.classList.contains('no-motion')) return;
+    const wdSec = document.querySelector<HTMLElement>('.e-wd');
+    const fx = document.querySelector<HTMLElement>('.fx');
+    if (!wdSec || !fx) return;
+    ScrollTrigger.create({
+      id: 'e-wd-pin',
+      trigger: wdSec,
+      start: 'bottom bottom',
+      end: 'max',
+      pin: true,
+      pinSpacing: false,
+      refreshPriority: -2,
+      invalidateOnRefresh: true,
+    });
+  };
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(() => { run(); heroAppear(); intro(); works(); footerOverlay(); ScrollTrigger.refresh(); }));
 </script>
 
 <style>
@@ -967,7 +991,7 @@ const disciplines = [
   /* Kotak video disembunyikan sampai intro mulai; posisi awalnya (menempel di dasar layar) dihitung oleh heroAppear */
   :global(html.hero-intro) .e-hero-img { visibility: hidden; }
   :global(html.hero-intro .site-header .wrap), :global(html.hero-intro) .e-hero-meta > *, :global(html.hero-intro) .e-hero-lead > * { opacity: 0; }
-  :global(html.js-anim) .e-hero { height: 100svh; overflow: hidden; }
+  :global(html.js-anim) .e-hero { height: calc(100svh + 4px); overflow: hidden; }
   .e-hero-top { position: relative; z-index: 3; display: grid; gap: 32px; padding-top: 120px; padding-bottom: clamp(24px, 3vw, 40px); }
   .e-hero-meta { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; will-change: transform; }
   .e-faces { display: flex; }
@@ -1045,46 +1069,9 @@ const disciplines = [
 
 
   /* Home only: What we do fills at least one screen (the merged CTA + footer in Footer.astro sets its own height).
-     min-height, not height, so taller content (an open row on a phone) is never cut off. */
-  .e-wd { min-height: 100vh; min-height: 100svh; }
-  .e-wd { display: flex; flex-direction: column; justify-content: center; }
+     min-height, not height, so taller content is never cut off. */
+  .e-wd { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
   .e-wd > .wrap { width: 100%; }
-
-  /* 4b. What we do */
-  .e-wd-in { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); }
-  .e-wd-side { display: grid; align-content: start; gap: clamp(20px, 3vw, 40px); }
-  .e-wd-t { justify-self: start; margin: 0; font-size: var(--text-base); letter-spacing: -0.01em; }
-  .e-wd-frame { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-card); overflow: hidden; background: var(--color-surface); }
-  .e-wd-frame :global(.e-wd-img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity var(--duration-slow) var(--ease-brand); }
-  .e-wd:has(.acc-item:nth-child(1).open) :global(.e-wd-img:nth-child(1)),
-  .e-wd:has(.acc-item:nth-child(2).open) :global(.e-wd-img:nth-child(2)),
-  .e-wd:has(.acc-item:nth-child(3).open) :global(.e-wd-img:nth-child(3)),
-  .e-wd:has(.acc-item:nth-child(4).open) :global(.e-wd-img:nth-child(4)) { opacity: 1; }
-  .e-wd:not(:has(.acc-item.open)) :global(.e-wd-img:nth-child(1)) { opacity: 1; }
-  .e-wd-list { border-top: 0; }
-  .e-wd-list .acc-item { border-bottom-color: color-mix(in srgb, var(--color-border) 50%, transparent); }
-  .e-wd-list .acc-item:last-child { border-bottom: 0; }
-  .e-wd-list .acc-btn { grid-template-columns: minmax(0, 1fr) auto; padding: clamp(14px, 1.6vw, 22px) 0; }
-  .e-wd-name { font-size: var(--text-xl); line-height: 1; letter-spacing: -0.04em; font-weight: 600; padding-bottom: .08em; transition: color var(--duration-fast); }
-  .e-wd-list .acc-btn:hover .e-wd-name, .e-wd-list .acc-item.open .e-wd-name { color: var(--color-accent); }
-  .e-wd-list .arr { width: 36px; height: 36px; font-size: 1.2rem; line-height: 1; }
-  .e-wd-list .acc-item.open .arr { transform: rotate(45deg); }
-  .e-wd-body { padding: 0 0 clamp(24px, 2.6vw, 36px); }
-  .e-wd-body p { max-width: 40ch; margin: 0; font-size: var(--text-base); line-height: 1.5; color: var(--color-muted); }
-  /* Mobile: no side image; each open row shows its own image under the text. */
-  .e-wd-pic { margin-top: 24px; aspect-ratio: 4 / 3; border-radius: var(--radius-card); overflow: hidden; background: var(--color-surface); }
-  .e-wd-pic :global(img) { width: 100%; height: 100%; object-fit: cover; }
-  @media (max-width: 1023px) {
-    .e-wd-frame { display: none; }
-    .e-wd-name { font-size: var(--text-4xl); }
-  }
-  @media (min-width: 1024px) {
-    .e-wd-pic { display: none; }
-    .e-wd-t { justify-self: end; text-align: right; }
-    /* Both columns share one height: the image fills whatever the list leaves below the heading. */
-    .e-wd-in { grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: clamp(40px, 6vw, 120px); align-items: stretch; }
-    .e-wd-side { order: 2; display: flex; flex-direction: column; }
-    .e-wd-frame { flex: 1 1 auto; aspect-ratio: auto; min-height: 240px; }
-  }
+  .e-wd :global(.e-wd-bg-img) { width: 100%; height: 100%; object-fit: cover; }
 
 </style>

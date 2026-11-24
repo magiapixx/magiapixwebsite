@@ -175,6 +175,12 @@ const year = new Date().getFullYear();
     background: var(--blue);
     color: #fff;
   }
+  /* Beranda: footer berada di atas <main> dan menggulung naik mengoverlay section sebelumnya (.e-wd). */
+  :global(body:not(.wide-sections)) .fx {
+    position: relative;
+    bottom: auto;
+    z-index: 2;
+  }
 
   /* Wordmark raksasa selebar layar di antara ajakan dan baris bawah: putih transparan, sedikit blur */
   .fx-wm { flex: none; pointer-events: none; padding-bottom: clamp(0.5rem, 2svh, 2rem); }
