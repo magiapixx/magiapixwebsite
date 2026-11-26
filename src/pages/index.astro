@@ -591,24 +591,23 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
       const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
       const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
       const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+      const stackScale = 1 / 1.05;
+      const stackRadius = parseFloat(getComputedStyle(root).getPropertyValue('--radius-card'));
 
       let introEndScroll = 0;
       let expandStart = 0;
       let picBase: BoxRect[] = [];
-      let cardMetrics: { docTop: number; left: number; width: number; height: number }[] = [];
+      let cardMetrics: { docTop: number; left: number; width: number; height: number; radius: number }[] = [];
       let endScrolls: number[] = [];
 
-      const getDockRect = (_idx: number): BoxRect => {
-        const w = innerWidth;
-        const h = innerHeight;
-        // Sembunyikan di belakang tombol email melayang (56x56px di right:20px, bottom:20px; pusat di w-48, h-48)
-        const size = 44;
+      const getStackRect = (target: BoxRect): BoxRect => {
+        const inset = (1 - stackScale) / 2;
         return {
-          left: w - 48 - size / 2,
-          top: h - 48 - size / 2,
-          width: size,
-          height: size,
-          radius: size / 2,
+          left: target.left + target.width * inset,
+          top: target.top + target.height * inset,
+          width: target.width * stackScale,
+          height: target.height * stackScale,
+          radius: stackRadius * stackScale,
         };
       };
 
@@ -637,6 +636,7 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
             left: r.left,
             width: r.width,
             height: r.height,
+            radius: parseFloat(getComputedStyle(c).borderTopLeftRadius),
           };
         });
 
@@ -766,7 +766,7 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
             top: targetMetric.docTop - sy,
             width: targetMetric.width,
             height: targetMetric.height,
-            radius: 0,
+            radius: targetMetric.radius,
           };
 
           if (i === 0) {
@@ -777,13 +777,13 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
             } else {
               const e = easeInOutCubic(pe);
               // Target: layar penuh (100vh) di atas layar, sama dengan ukuran kartu pertama.
-              const full: BoxRect = { left: targetBox.left, top: 0, width: targetBox.width, height: targetBox.height, radius: 0 };
+              const full: BoxRect = { left: targetBox.left, top: 0, width: targetBox.width, height: targetBox.height, radius: targetBox.radius };
               const box: BoxRect = {
                 left: lerp(picBase[0].left, full.left, e),
                 top: lerp(picBase[0].top, full.top, e),
                 width: lerp(picBase[0].width, full.width, e),
                 height: lerp(picBase[0].height, full.height, e),
-                radius: lerp(picBase[0].radius, 0, e),
+                radius: lerp(picBase[0].radius, targetBox.radius, e),
               };
               if (cardBox) cardBox.style.opacity = '0';
               setCapProgress(cardCap, (ph - 0.72) / 0.28);
@@ -799,38 +799,38 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
             continue;
           }
 
-          const dock = getDockRect(i);
-
           if (sy <= endScrolls[0]) {
             if (cardBox) cardBox.style.opacity = '0';
             setCapProgress(cardCap, 0);
-            // Fase 1: turun serentak (sedikit bertahap) dari About Us ke posisi dock kartu di Selected Works
+            // Fase 1: gambar turun bertahap ke bawah kartu aktif, tersusun sesuai urutan Selected Works.
             const delay = i * 0.06;
             const localP = clamp01((pe - delay) / Math.max(0.01, 1 - delay));
             const e = easeInOutCubic(localP);
+            const stack = getStackRect(targetBox);
             const box: BoxRect = {
-              left: lerp(picBase[i].left, dock.left, e),
-              top: lerp(picBase[i].top, dock.top, e),
-              width: lerp(picBase[i].width, dock.width, e),
-              height: lerp(picBase[i].height, dock.height, e),
-              radius: lerp(picBase[i].radius, dock.radius, e),
+              left: lerp(picBase[i].left, stack.left, e),
+              top: lerp(picBase[i].top, stack.top, e),
+              width: lerp(picBase[i].width, stack.width, e),
+              height: lerp(picBase[i].height, stack.height, e),
+              radius: lerp(picBase[i].radius, stack.radius, e),
             };
             applyRect(clone, box, 1, Math.sin(Math.PI * e), 0);
           } else if (sy <= endScrolls[i - 1]) {
             if (cardBox) cardBox.style.opacity = '0';
             setCapProgress(cardCap, 0);
-            // Menunggu rapi tersembunyi di belakang tombol email sampai giliran kartunya muncul
-            applyRect(clone, dock, 1, 0, 0);
+            // Kartu berikutnya menunggu tepat di bawah kartu aktif, 5% lebih kecil.
+            applyRect(clone, getStackRect(targetBox), 1, 0, 0);
           } else {
-            // Fase 2: mengembang dari belakang tombol email menjadi kartu Selected Works ukuran penuh
+            // Fase 2: kartu berikutnya membesar 5% hingga memenuhi layar.
             const pi = clamp01((sy - endScrolls[i - 1]) / Math.max(1, endScrolls[i] - endScrolls[i - 1]));
             const e = easeInOutCubic(pi);
+            const stack = getStackRect(targetBox);
             const box: BoxRect = {
-              left: lerp(dock.left, targetBox.left, e),
-              top: lerp(dock.top, targetBox.top, e),
-              width: lerp(dock.width, targetBox.width, e),
-              height: lerp(dock.height, targetBox.height, e),
-              radius: lerp(dock.radius, 0, e),
+              left: lerp(stack.left, targetBox.left, e),
+              top: lerp(stack.top, targetBox.top, e),
+              width: lerp(stack.width, targetBox.width, e),
+              height: lerp(stack.height, targetBox.height, e),
+              radius: lerp(stack.radius, targetBox.radius, e),
             };
             if (cardBox) cardBox.style.opacity = pi >= 0.985 ? '1' : '0';
             setCapProgress(cardCap, (pi - 0.72) / 0.28);
@@ -862,7 +862,7 @@ const bentoDisciplines: BentoDisciplineItem[] = await Promise.all(
       //   sampai kartu pertama tepat di atas layar (gambar pertama melebar penuh selama luncuran); scroll ke atas
       //   dari kartu pertama meluncur balik ke kalimat.
       // - Kartu Selected works: satu kali scroll pindah ke kartu berikutnya/sebelumnya (1,6 detik); selama
-      //   luncuran, mini-card di dock melebar menjadi kartu berikutnya.
+      //   luncuran, kartu berikutnya yang menunggu di bawah membesar 5% menjadi ukuran penuh.
       const stepCount = Math.min(cards.length, pics.length);
       const cardTop = (k: number) => Math.round(cardMetrics[k]?.docTop ?? 0);
       let lastGlideY = window.scrollY;

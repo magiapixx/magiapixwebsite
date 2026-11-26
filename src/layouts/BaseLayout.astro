@@ -42,7 +42,18 @@ const { title, description, image, type, loader = true, noindex = false } = Astr
           setTimeout(function () { r.classList.remove('hero-intro'); }, loading ? 95000 : 5000);
         }
         try {
-          if (sessionStorage.getItem('bb-pt')) r.classList.add('pt-cover');
+          if (sessionStorage.getItem('bb-pt')) {
+            var origin = (sessionStorage.getItem('bb-pt-origin') || '').split(',').map(Number);
+            var x = Number.isFinite(origin[0]) ? origin[0] : innerWidth / 2;
+            var y = Number.isFinite(origin[1]) ? origin[1] : innerHeight / 2;
+            var radius = Math.ceil(Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 1);
+            var fallbackCircle = 'circle(' + radius + 'px at ' + x + 'px ' + y + 'px)';
+            r.style.setProperty('--pt-x', x + 'px');
+            r.style.setProperty('--pt-y', y + 'px');
+            r.style.setProperty('--pt-circle', sessionStorage.getItem('bb-pt-circle') || fallbackCircle);
+            r.style.setProperty('--pt-blob', sessionStorage.getItem('bb-pt-blob') || fallbackCircle);
+            r.classList.add('pt-cover');
+          }
         } catch (e) {}
       })();
     </script>
@@ -62,8 +73,7 @@ const { title, description, image, type, loader = true, noindex = false } = Astr
       </div>
     )}
     <div class="pt" aria-hidden="true"><span></span></div>
-    <!-- Panel transisi: isi nama halaman tujuan sejak paint pertama. Tanpa ini panel tampil kosong ~0,3 detik
-         sampai skrip utama dimuat, lalu teksnya muncul lagi (terlihat berkedip). -->
+    <!-- Isi nama halaman tujuan sejak paint pertama agar transisi lingkaran tidak berkedip saat skrip dimuat. -->
     <script is:inline>
       try { var n = sessionStorage.getItem('bb-pt'); if (n) document.querySelector('.pt span').textContent = n; } catch (e) {}
     </script>

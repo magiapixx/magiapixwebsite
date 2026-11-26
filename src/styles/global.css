@@ -185,8 +185,8 @@ h1,h2,h3{text-wrap:balance}p{text-wrap:pretty}
 }
 
 /* Panel transisi halaman + loader */
-.pt{position:fixed;inset:0;z-index:90;visibility:hidden;background:var(--orange);color:oklch(.99 0 0);display:grid;place-items:center;pointer-events:none}
-html.pt-cover .pt{visibility:visible}
+.pt{position:fixed;inset:0;z-index:90;visibility:hidden;background:var(--orange);color:oklch(.99 0 0);display:grid;place-items:center;pointer-events:none;clip-path:circle(0 at 50% 50%)}
+html.pt-cover .pt{visibility:visible;clip-path:var(--pt-circle,var(--pt-blob,circle(150vmax at 50% 50%)))}
 .pt span{font-size:var(--text-4xl);font-weight:600;letter-spacing:-.03em}
 /* Loader awal: wordmark kiri atas, peringatan kanan atas, angka persen besar kiri bawah, garis progres di dasar.
    Halaman di bawahnya tertutup dan tidak bisa di-scroll sampai semua aset selesai dimuat (loader.ts). */
